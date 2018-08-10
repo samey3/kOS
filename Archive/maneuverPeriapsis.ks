@@ -9,8 +9,10 @@ LOCAL periapsis_baseVelocity_Mag IS VELOCITYAT(SHIP,TIME:SECONDS + ETA:PERIAPSIS
 LOCAL burnAmount IS req_periapsisVelocity_Mag - periapsis_baseVelocity_Mag.
 
 IF(burnAmount > 0){
-	RUN nodeBurn(ETA:PERIAPSIS, burnAmount, 1). 
+	//RUN nodeBurn(ETA:PERIAPSIS, burnAmount, 1). 
+	RUNPATH ("basic_functions/nodeBurn.ks", ETA:PERIAPSIS, burnAmount, 1).
 }
 ELSE {
-	RUN nodeBurn(ETA:PERIAPSIS, -burnAmount, 2). 
+	//RUN nodeBurn(ETA:PERIAPSIS, -burnAmount, 2). 
+	RUNPATH ("basic_functions/nodeBurn.ks", ETA:PERIAPSIS, -burnAmount, 2).
 }	

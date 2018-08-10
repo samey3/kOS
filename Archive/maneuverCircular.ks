@@ -14,7 +14,8 @@ IF(_radius > _SMA){ //Periapsis maneuver
 	LOCAL periapsis_baseVelocity_Mag IS VELOCITYAT(SHIP,TIME:SECONDS + _timeToBurn):ORBIT:MAG.
 	LOCAL burnAmount IS ABS(req_periapsisVelocity_Mag - periapsis_baseVelocity_Mag).
 	
-	RUN nodeBurn(_timeToBurn, burnAmount, 1).
+	//RUN nodeBurn(_timeToBurn, burnAmount, 1).
+	RUNPATH ("basic_functions/nodeBurn.ks", _timeToBurn, burnAmount, 1).
 }
 ELSE{ //Apoapsis maneuver
 	LOCAL _periapsis IS _radius.
@@ -26,5 +27,6 @@ ELSE{ //Apoapsis maneuver
 	LOCAL apoapsis_baseVelocity_Mag IS VELOCITYAT(SHIP,TIME:SECONDS + _timeToBurn):ORBIT:MAG.
 	LOCAL burnAmount IS ABS(req_apoapsisVelocity_Mag - apoapsis_baseVelocity_Mag).
 	
-	RUN nodeBurn(_timeToBurn, burnAmount, 2).
+	//RUN nodeBurn(_timeToBurn, burnAmount, 2).
+	RUNPATH ("basic_functions/nodeBurn.ks", _timeToBurn, burnAmount, 2).
 }

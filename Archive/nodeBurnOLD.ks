@@ -1,27 +1,79 @@
-//This is for burns that are a short distance away generally.
-//The heading vector will drift if it is a long time until the burn point, unless you are using a KSP-inherent heading (e.g. prograde, radial, etc.)
-
-
 //--------------------------------------------------------------------------\
 //								Parameters					   				|
 //--------------------------------------------------------------------------/
 
 
 	PARAMETER _timeToBurn_Maximum. 
-	PARAMETER _inclinationChange IS 0.
-	GLOBAL returnVal IS 0.
+	PARAMETER _burnDV.
+	PARAMETER _dirVector IS V(0,0,0).
 	
 	LOCAL velFuture IS VELOCITYAT(SHIP, TIME:SECONDS + _timeToBurn_Maximum).
-	LOCAL up_Vector IS VCRS(velFuture:ORBIT, POSITIONAT(SHIP, TIME:SECONDS + _timeToBurn_Maximum) - POSITIONAT(BODY, TIME:SECONDS + _timeToBurn_Maximum)):NORMALIZED. //'Up' vector
-	LOCAL expectedVector IS (up_Vector*(TAN(_inclinationChange)*velFuture:ORBIT:MAG) + velFuture:ORBIT):NORMALIZED * velFuture:ORBIT:MAG.
+	
+	IF _dirVector = 1 {
+		LOCK _dirVector_set TO PROGRADE.
+		SET expectedVector TO velFuture:ORBIT + velFuture:ORBIT:NORMALIZED*_burnDV.
+	}
+	ELSE IF _dirVector = 2 {
+		LOCK _dirVector_set TO RETROGRADE.
+		SET expectedVector TO velFuture:ORBIT - velFuture:ORBIT:NORMALIZED*_burnDV.
+	}
+	ELSE IF _dirVector = 3 {
+		LOCK _dirVector_set TO (-VELOCITY:SURFACE):DIRECTION. //Surface retrograde
+		SET expectedVector TO velFuture:SURFACE - velFuture:SURFACE:NORMALIZED*_burnDV.
+	}
+	ELSE IF _dirVector = 4 { //LHR motion up (Normal). Was previously up
+		//Ship onto target : Ascending
+		//Target onto ship : Descending
+		SHIP:ANGULARMOMENTUM:NORMALIZED.
+		LOCK _dirVector_set TO UP.
+	}
+	ELSE IF _dirVector = 5 { //LHR motion down (Anti-normal)
+	
+	}
+	ELSE IF _dirVector = 6 { //Raise inclination in Normal-direction
 
-	LOCAL thrustVector IS expectedVector - velFuture:ORBIT.
-	LOCAL _burnDV IS thrustVector:MAG.
-	SET _dirVector_set TO thrustVector:DIRECTION.
+	}
+	ELSE IF _dirVector = 7 { //Lower inclination in Anti-Normal direction
+		
+	}
+	ELSE
+	{
+		SET _dirVector_set TO _dirVector:DIRECTION.
+		SET expectedVector TO velFuture:ORBIT + _dirVector:NORMALIZED*_burnDV.
+	}
 
+	
+	IF _dirVector = 1 {
+		LOCK _dirVector_set TO VELOCITY:ORBIT:DIRECTION. } //Orbit prograde
+	ELSE IF _dirVector = 2 {
+		LOCK _dirVector_set TO -VELOCITY:ORBIT:DIRECTION. } //Orbit retrograde
+	ELSE IF _dirVector = 3 {
+		LOCK _dirVector_set TO VELOCITY:SURFACE:DIRECTION. } //Surface prograde
+	ELSE IF _dirVector = 4 {
+		LOCK _dirVector_set TO -VELOCITY:SURFACE:DIRECTION. } //Surface retrograde
+	ELSE IF _dirVector = 5 {
+		LOCK _dirVector_set TO VCRS(VELOCITY:ORBIT, UP:VECTOR). } //Radial 'up' (LH)
+	ELSE IF _dirVector = 6 {
+		LOCK _dirVector_set TO VCRS(UP:VECTOR, VELOCITY:ORBIT). } //Radial 'down' (LH)
+	ELSE IF _dirVector = 7 {
+		LOCK _dirVector_set TO VCRS(VCRS(VELOCITY:ORBIT, UP:VECTOR), VELOCITY:ORBIT). } //Normal 'out' (LH)
+	ELSE IF _dirVector = 8 {
+		LOCK _dirVector_set TO VCRS(VELOCITY:ORBIT, VCRS(VELOCITY:ORBIT, UP:VECTOR)). } //Normal 'in' (LH)
+	
+	
+	
+	
+	
+	
+	
+	
+	ELSE IF _dirVector = 3 {
+		LOCK _dirVector_set TO (-VELOCITY:SURFACE):DIRECTION. //Surface retrograde
+	
 	SAS ON.
 	RCS ON.
 	SET controlStick to SHIP:CONTROL.
+
 
 //--------------------------------------------------------------------------\
 //								Variables					   				|

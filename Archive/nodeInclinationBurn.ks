@@ -8,49 +8,20 @@
 
 
 	PARAMETER _timeToBurn_Maximum. 
-	PARAMETER _burnDV.
-	PARAMETER _dirVector IS V(0,0,0).
 	PARAMETER _inclinationChange IS 0.
+	GLOBAL returnVal IS 0.
 	
 	LOCAL velFuture IS VELOCITYAT(SHIP, TIME:SECONDS + _timeToBurn_Maximum).
-	
-	IF _dirVector = 1 {
-		LOCK _dirVector_set TO PROGRADE.
-		SET expectedVector TO velFuture:ORBIT + velFuture:ORBIT:NORMALIZED*_burnDV.
-	}
-	ELSE IF _dirVector = 2 {
-		LOCK _dirVector_set TO RETROGRADE.
-		SET expectedVector TO velFuture:ORBIT - velFuture:ORBIT:NORMALIZED*_burnDV.
-	}
-	ELSE IF _dirVector = 3 {
-		LOCK _dirVector_set TO (-VELOCITY:SURFACE):DIRECTION. //Surface retrograde
-		SET expectedVector TO velFuture:SURFACE - velFuture:SURFACE:NORMALIZED*_burnDV.
-	}
-	ELSE IF _dirVector = 4 { //LHR motion up (Normal). Was previously up
-		//Ship onto target : Ascending
-		//Target onto ship : Descending
-		SHIP:ANGULARMOMENTUM:NORMALIZED.
-		LOCK _dirVector_set TO UP.
-	}
-	ELSE IF _dirVector = 5 { //LHR motion down (Anti-normal)
-	
-	}
-	ELSE IF _dirVector = 6 { //Raise inclination in Normal-direction
+	LOCAL up_Vector IS VCRS(velFuture:ORBIT, POSITIONAT(SHIP, TIME:SECONDS + _timeToBurn_Maximum) - POSITIONAT(BODY, TIME:SECONDS + _timeToBurn_Maximum)):NORMALIZED. //'Up' vector
+	LOCAL expectedVector IS (up_Vector*(TAN(_inclinationChange)*velFuture:ORBIT:MAG) + velFuture:ORBIT):NORMALIZED * velFuture:ORBIT:MAG.
 
-	}
-	ELSE IF _dirVector = 7 { //Lower inclination in Anti-Normal direction
-		
-	}
-	ELSE
-	{
-		SET _dirVector_set TO _dirVector:DIRECTION.
-		SET expectedVector TO velFuture:ORBIT + _dirVector:NORMALIZED*_burnDV.
-	}
+	LOCAL thrustVector IS expectedVector - velFuture:ORBIT.
+	LOCAL _burnDV IS thrustVector:MAG.
+	SET _dirVector_set TO thrustVector:DIRECTION.
 
 	SAS ON.
 	RCS ON.
 	SET controlStick to SHIP:CONTROL.
-
 
 //--------------------------------------------------------------------------\
 //								Variables					   				|
@@ -141,6 +112,7 @@
 
 	//IF(_dirVector <> 4){
 		//RUN cancelVelocity(expectedVector, 0.05).
+		//Cancel expected velocity? Checks in one orbits time (or time to where it needs to change) and compares there
 	//}
 	
 	RCS OFF.
