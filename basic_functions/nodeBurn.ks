@@ -1,4 +1,4 @@
-	//CLEARSCREEN.
+	CLEARSCREEN.
 
 //--------------------------------------------------------------------------\
 //								Parameters					   				|
@@ -24,7 +24,6 @@
 		}
 	}
 	LOCAL delta_v IS 9.80665*(totalISP/numEngines)*LN(SHIP:WETMASS/SHIP:DRYMASS).
-		SET delta_v TO 99999999999999.
 	
 	IF(SHIP:AVAILABLETHRUST = 0) {PRINT("No thrust").}
 	IF(_dirVector = V(0,0,0)) {PRINT("No vector").}
@@ -75,7 +74,8 @@
 	LOCK timeLeft TO (startTime - TIME:SECONDS).
 	
 	//Wait time for info
-	LOCAL waitTime IS 1.
+	//Whats this even used for?? Was 1, set to 0 for landAtCoordinates.
+	LOCAL waitTime IS 0.
 	
 	
 	//Expected final vector
@@ -95,14 +95,14 @@
 	RCS OFF. //ON.
 	WAIT waitTime. //Incase ship was moving
 	
-	
-	//Warp to the position,
-	PRINT("     Node-burn subscript     ").
-	PRINT("-----------------------------").
-	PRINT("Warping to burn position. . .").
-	KUNIVERSE:TIMEWARP:WARPTO(startTime - waitTime - (burnTime/2 + 20)).
-	WAIT UNTIL WARP = 0 and SHIP:UNPACKED.
-	
+	IF(_timeToPeak > 20){
+		//Warp to the position,
+		PRINT("     Node-burn subscript     ").
+		PRINT("-----------------------------").
+		PRINT("Warping to burn position. . .").
+		KUNIVERSE:TIMEWARP:WARPTO(startTime - waitTime - (burnTime/2 + 20)).
+		WAIT UNTIL WARP = 0 and SHIP:UNPACKED.
+	}
 	
 	//(TRIGGER) Once there are 20 seconds until the start of the burn, orientate
 	WHEN (timeLeft <= (burnTime/2 + 20)) THEN { LOCK STEERING TO smoothRotate(t_vec:DIRECTION). }
@@ -141,12 +141,6 @@
 		WAIT burnTime.
 	}	
 	LOCK THROTTLE TO 0.	
-
-	
-	//Corrects velocity
-	//IF(_dirVector <> 4){
-		//RUN cancelVelocity(expectedVector, 0.05).
-	//}
 	
 	
 //--------------------------------------------------------------------------\

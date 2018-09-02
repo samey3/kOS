@@ -1,19 +1,11 @@
-//PARAMETER path IS STACK().
-LOCAL path IS STACK().
+//REQUIRES A QUEUE
+PARAMETER path.
 
-//A queue might be better here
-//path:PUSH(SHIP:GEOPOSITION).
-//path:PUSH(LATLNG(0.5, 112.5)).
-//path:PUSH(LATLNG(1, 113)).
-//path:PUSH(LATLNG(0.5, 113.5)).
-//path:PUSH(LATLNG(0, 113.5)).
-//path:PUSH(LATLNG(0, 113)).
 
-//path:PUSH(SHIP:GEOPOSITION).
-//path:PUSH(LATLNG(0, 113)).
 
-path:PUSH(TARGET:GEOPOSITION).
-path:PUSH(SHIP:BODY:GEOPOSITIONOF(HEADING(270,0):VECTOR*300)).
+
+
+
 
 BRAKES OFF.
 PRINT("lat : " + SHIP:GEOPOSITION:LAT).
@@ -55,8 +47,11 @@ UNTIL (path:EMPTY){ //Does while false, waits till true
 		//Maintain velocity
 		CLEARSCREEN.
 		PRINT("Travelling to : ").
+		PRINT("Lat : " + nextNode:LAT).
+		PRINT("Lng : " + nextNode:LNG).
 		PRINT("Lat : " + SHIP:GEOPOSITION:LAT).
 		PRINT("Lng : " + SHIP:GEOPOSITION:LNG).
+		PRINT("Slope : " + ((nextNode:TERRAINHEIGHT - SHIP:GEOPOSITION:TERRAINHEIGHT)/(nextNode:POSITION - SHIP:POSITION):MAG)).
 		PRINT("Distance left : " + (nextNode:POSITION - SHIP:GEOPOSITION:POSITION):MAG).
 		PRINT("Turn radius : " + turnRadius).
 		SET surfaceNormalVec TO VECDRAWARGS(SHIP:POSITION,surfaceNormal*10,GREEN,"Normal",1,TRUE).

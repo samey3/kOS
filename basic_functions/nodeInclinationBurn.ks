@@ -30,6 +30,7 @@
 	
 	//For info display
 	LOCAL waitTime IS 3.
+	IF(_timeToPeak < (20 + waitTime)){ SET waitTime TO 0. }
 	
 
 //--------------------------------------------------------------------------\

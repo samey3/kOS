@@ -43,7 +43,7 @@
 	
 	//At the point where the target orbit's periapsis touches the ships orbit, we increase our apoapsis to match
 	RUNPATH ("basic_functions/timeToRelativePeriapsis.ks", _targetCraft).
-	RUNPATH ("basic_functions/circularManeuver.ks", _targetCraft:ORBIT:APOAPSIS + _targetCraft:ORBIT:BODY:RADIUS, returnVal, TRUE).
+	RUNPATH ("basic_functions/circularManeuver.ks", _targetCraft:ORBIT:APOAPSIS + _targetCraft:ORBIT:BODY:RADIUS, returnVal, 0, TRUE).
 	
 	
 	
