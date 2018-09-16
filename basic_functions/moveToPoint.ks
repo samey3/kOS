@@ -9,6 +9,14 @@
 	PARAMETER hostToPointVec. //Vector extending from host object
 	PARAMETER faceDir IS 0. //Direction to face during move (Default 0 is current facing).
 	
+	
+//--------------------------------------------------------------------------\
+//								 Imports					   				|
+//--------------------------------------------------------------------------/
+
+
+	RUNONCEPATH("lib/shipControl.ks").
+	
 
 //--------------------------------------------------------------------------\
 //								Variables					   				|
@@ -103,7 +111,6 @@
 	//-----------------------------------------\
 	//Reduce relative velocity, orientate------|
 		RUNPATH("basic_functions/modVelocity.ks", shipRoot, V(0,0,0)).
-		SAS ON.
 		IF(faceDir = 0){
 			SET dir TO SHIP:FACING.
 			LOCK STEERING TO smoothRotate(dir).
@@ -250,19 +257,3 @@
 	CLEARVECDRAWS().
 	
 	WAIT 1.
-		
-	
-//------------------------------------------------------------------------------------------------------\
-//												FUNCTIONS												|
-//------------------------------------------------------------------------------------------------------/
-	
-	
-	FUNCTION smoothRotate {
-		PARAMETER dir.
-		LOCAL spd IS max(SHIP:ANGULARMOMENTUM:MAG/10,4).
-		LOCAL curF IS SHIP:FACING:FOREVECTOR.
-		LOCAL curR IS SHIP:FACING:TOPVECTOR.
-		LOCAL rotR IS R(0,0,0).
-		IF VANG(dir:FOREVECTOR,curF) < 90{SET rotR TO ANGLEAXIS(min(0.5,VANG(dir:TOPVECTOR,curR)/spd),VCRS(curR,dir:TOPVECTOR)).}
-		RETURN LOOKDIRUP(ANGLEAXIS(min(2,VANG(dir:FOREVECTOR,curF)/spd),VCRS(curF,dir:FOREVECTOR))*curF,rotR*curR).
-	}

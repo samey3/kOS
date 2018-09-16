@@ -1,0 +1,3 @@
+Lib functions return values
+basic_fuctions do basic actions, uses lib functions for data
+Top level scripts mainly run off of basic_functions

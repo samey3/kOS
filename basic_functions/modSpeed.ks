@@ -11,6 +11,14 @@
 	
 	
 //--------------------------------------------------------------------------\
+//								 Imports					   				|
+//--------------------------------------------------------------------------/
+
+
+	RUNONCEPATH("lib/shipControl.ks").
+	
+	
+//--------------------------------------------------------------------------\
 //								Variables					   				|
 //--------------------------------------------------------------------------/		
 			
@@ -72,7 +80,6 @@
 	//Disables user control
 	SET CONTROLSTICK to SHIP:CONTROL.
 	LOCK STEERING TO smoothRotate(SHIP:FACING).
-	SAS ON.
 	RCS ON.	
 
 
@@ -143,7 +150,6 @@
 	
 	//Returns user control
 	SET SHIP:CONTROL:NEUTRALIZE to TRUE.
-	SAS OFF.
 	RCS OFF.
 	
 	//Unlock all variables		
@@ -157,19 +163,3 @@
 	UNLOCK THROTTLE.
 	
 	WAIT 1.
-	
-
-//------------------------------------------------------------------------------------------------------\
-//												FUNCTIONS												|
-//------------------------------------------------------------------------------------------------------/
-
-
-FUNCTION smoothRotate {
-    PARAMETER dir.
-    LOCAL spd IS max(SHIP:ANGULARMOMENTUM:MAG/10,4).
-    LOCAL curF IS SHIP:FACING:FOREVECTOR.
-    LOCAL curR IS SHIP:FACING:TOPVECTOR.
-    LOCAL rotR IS R(0,0,0).
-    IF VANG(dir:FOREVECTOR,curF) < 90{SET rotR TO ANGLEAXIS(min(0.5,VANG(dir:TOPVECTOR,curR)/spd),VCRS(curR,dir:TOPVECTOR)).}
-    RETURN LOOKDIRUP(ANGLEAXIS(min(2,VANG(dir:FOREVECTOR,curF)/spd),VCRS(curF,dir:FOREVECTOR))*curF,rotR*curR).
-}

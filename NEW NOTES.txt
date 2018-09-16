@@ -1,0 +1,38 @@
+Should maybe modify mod_velocity to run in different modes instead of creating a bunch of different ones?
+
+Will define how differenceVector is set up.
+
+E.g. All, plane, axis
+Axis will work by taking in a vector as a parameter, and dotting it against everything.
+
+Maybe axis and plane can have their own, as they use the body as the host object?
+But that means you could use the original using the body.
+What about surface vs orbital velocity, is that a problem?
+^^^
+With modAxis, can replace modTrajectory
+^^^
+Maybe make the 'mod' script calls the iterative ones? and have a master controller one?
+
+
+
+StopAtVector.ks:
+Run an iterative mod_trajectory or whatever inside the loops so it is constantly correcting.
+
+
+
+ALSO
+Need to make some sort of a modPos to maintain horizontal position on descent,
+especially in-atmosphere
+
+
+
+SUICIDE BURN LINE 29
+_coordinates variable coming out of nowhere???
+
+
+
+
+
+Can have a global variable 'currentScript' that is modified IMMEDIATELY upon a new script
+being run. Can have an ON in a ship config or shipSystems.ks that waits for a change,
+and does any appropriate staging/whatever.

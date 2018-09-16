@@ -1,21 +1,55 @@
-@lazyglobal OFF.
-runoncepath("lib/impactProperties.ks").
-runoncepath("lib/shipControl.ks").
+	@lazyglobal OFF.
+	RUNONCEPATH("lib/GUI_IO.ks").
 
-CLEARSCREEN.
 
-LOCK STEERING TO SHIP:FACING.
-LOCK THROTTLE TO 0.
-UNLOCK STEERING.
-UNLOCK THROTTLE.
+
+//Atmo bodies:
+//Can use a really lowered periapsis, enough that the current geo pos will be the landing coordinates (enough forward vel to match it) ,or go 0 horizontal vel?
+//Thus can drop straight down onto the position with no horizontal affect from the atmosphere.
+//Can also use parachutes accurately this way.
+
+//Use time to 10k, add that lng to targCoord lng, find new geoposition, use that for initial corrections.
+
+
+	CLEARSCREEN.
+	LOCK STEERING TO SHIP:FACING.
+	LOCK THROTTLE TO 0.
+	UNLOCK STEERING.
+	UNLOCK THROTTLE.
+	
 
 //--------------------------------------------------------------------------\
 //								Parameters					   				|
 //--------------------------------------------------------------------------/
 
 
-	PARAMETER _coordinates IS TARGET:GEOPOSITION.
+	//If none chosen, GUI load
+	PARAMETER _coordinates IS selectCoordinates().
+		//If it returned a vessel
+		LOCAL targetCraft IS 0.
+		IF(_coordinates:ISTYPE("Vessel")){
+			SET targetCraft TO _coordinates.
+			SET _coordinates TO _coordinates:GEOPOSITION.
+		}
+		
+		//Records the desired, in atmosphere it must overshoot a bit
+		LOCAL initialCoordinates IS _coordinates.
+		IF(SHIP:BODY:ATM:EXISTS){
+			//Split the 13 degree based on the inclination ratio
+			SET _coordinates TO LATLNG(_coordinates:LAT, _coordinates:LNG + 13). }
+			
 	PARAMETER _interceptAltitude IS SHIP:BODY:RADIUS - 50000.
+	
+	
+//--------------------------------------------------------------------------\
+//								 Imports					   				|
+//--------------------------------------------------------------------------/
+
+
+	RUNONCEPATH("lib/impactProperties.ks").
+	RUNONCEPATH("lib/shipControl.ks").
+	RUNONCEPATH("lib/math.ks").
+	RUNONCEPATH("lib/gameControl.ks").
 
 
 //--------------------------------------------------------------------------\
@@ -139,72 +173,59 @@ UNLOCK THROTTLE.
 	//----------------------------------------------------\
 	//Transition to target orbit--------------------------|
 		RUNPATH("basic_functions/circularManeuver.ks", _interceptAltitude, meanShift/(360/SHIP:ORBIT:PERIOD), inclination, FALSE).
-	
+		WAIT 1.
 
-	//SAS ON.
-	//RUNPATH("tester.ks").
-	
+		UNTIL(TRUE){		
+			SET impactCoords TO getImpactCoords(targetHeight).
+			SET timeToImpact TO getImpactTime(targetHeight).	
 
-	UNTIL(TRUE){
-		
-		
-		SET impactCoords TO getImpactCoords(targetHeight).
-		SET timeToImpact TO getImpactTime(targetHeight).	
-
-		CLEARSCREEN.
-		PRINT("Current lat : " + SHIP:GEOPOSITION:LAT).
-		PRINT("Current lng : " + SHIP:GEOPOSITION:LNG).
-		PRINT("---------------------------------").	
-		PRINT("Impact lat  : " + impactCoords:LAT).
-		PRINT("Impact lng  : " + impactCoords:LNG).
-		PRINT("---------------------------------").
-		PRINT("Time until impact : " + timeToImpact).
-
-		WAIT 0.1.
-	}	
+			CLEARSCREEN.
+			PRINT("Current lat : " + SHIP:GEOPOSITION:LAT).
+			PRINT("Current lng : " + SHIP:GEOPOSITION:LNG).
+			PRINT("---------------------------------").	
+			PRINT("Impact lat  : " + impactCoords:LAT).
+			PRINT("Impact lng  : " + impactCoords:LNG).
+			PRINT("---------------------------------").
+			PRINT("Time until impact : " + timeToImpact).
+			WAIT 0.1.
+		}	
 	
 	
-	
-	//Do a warp somewhere.
 	//----------------------------------------------------\
-	//Ensure correct velocity direction-------------------|
-		//Use modVelocity with a 0.01 time limit?
-		//Seems like a bit of a hack though, how about a separate function that returns after 1 run-through? 
-		//Thus call it as much as you want
+	//Warp to corrections---------------------------------|
 	
+	
+		SET _coordinates TO initialCoordinates.
+		
+		LOCAL base_acceleration IS SHIP:AVAILABLETHRUST/SHIP:MASS. //Mass in metric tonnes
+		LOCAL timeToAbove IS getImpactTime(targetHeight + stopAltitude).
+		LOCAL pre_surfaceVelocity IS projectToPlane(VELOCITYAT(SHIP, TIME:SECONDS + timeToAbove):SURFACE, (_coordinates:POSITION - BODY:POSITION)).
+		LOCAL pre_burnTime IS pre_surfaceVelocity:MAG/base_acceleration.		
+		LOCK STEERING TO smoothRotate(RETROGRADE).
+		
+		IF(SHIP:BODY:ATM:EXISTS){
+			warpTime(timeToAbove - pre_burnTime - 60). }
+		ELSE {
+			warpTime(timeToAbove - pre_burnTime - 30). }
+		//60 atmosphere, 30 vacuum 
+		
+	//----------------------------------------------------\
+	//Ensure correct velocity direction-------------------|	
+		IF(SHIP:BODY:ATM:EXISTS){
+			RUNPATH("basic_functions/modTrajectory.ks", _coordinates, 0, 10). }
+		ELSE {
+			RUNPATH("basic_functions/modTrajectory.ks", _coordinates, 0, 20). }
+		//10 atmosphere, 20 vacuum	
+
 	//----------------------------------------------------\
 	//Reduce horizontal velocity above target-------------|
-		LOCAL base_acceleration IS SHIP:AVAILABLETHRUST/SHIP:MASS. //Mass in metric tonnes
-	
-		//Projects the relative position and velocity vectors onto the plane normal to the target's 'up' vector
-		//NEED TO AVOID USING TARGET, MUST USE _COORDINATES INSTEAD
-		LOCK horizontalVelocity TO (SHIP:VELOCITY:SURFACE - TARGET:VELOCITY:SURFACE) - (((SHIP:VELOCITY:SURFACE - TARGET:VELOCITY:SURFACE)*TARGET:UP:VECTOR)/TARGET:UP:VECTOR:MAG^2)*TARGET:UP:VECTOR. //Should maybe include target:surfaceVel evne though its 0?
-		LOCK horizontalVelocity TO SHIP:VELOCITY:SURFACE - ((SHIP:VELOCITY:SURFACE*TARGET:UP:VECTOR)/TARGET:UP:VECTOR:MAG^2)*TARGET:UP:VECTOR. //Should maybe include target:surfaceVel evne though its 0?
-		LOCK horizontalDistance TO (TARGET:POSITION - SHIP:POSITION) - (((TARGET:POSITION - SHIP:POSITION)*TARGET:UP:VECTOR)/TARGET:UP:VECTOR:MAG^2)*TARGET:UP:VECTOR.	
-
-		LOCK stopDistance TO (horizontalVelocity:MAG^2)/(2*base_acceleration).
-		
-		
-		LOCAL uv IS VECDRAWARGS(TARGET:POSITION,TARGET:UP:VECTOR*2000000,BLUE,"Landing position",1,TRUE).
-		LOCAL hv IS VECDRAWARGS(SHIP:POSITION,horizontalDistance,RED,"Horizontal distance",1,TRUE).
-		LOCK uv TO VECDRAWARGS(TARGET:POSITION,TARGET:UP:VECTOR*2000000,BLUE,"Landing position",1,TRUE).
-		LOCK hv TO VECDRAWARGS(SHIP:POSITION,horizontalDistance,RED,"Horizontal distance",1,TRUE).
-		
-		SAS ON.
-		LOCK STEERING TO smoothRotate((-horizontalVelocity):DIRECTION).
-		UNTIL(horizontalDistance:MAG <= stopDistance){
-			CLEARSCREEN.
-			PRINT("Time to burn : " + ((horizontalDistance:MAG - stopDistance)/horizontalVelocity:MAG)).		
-		}
-		RUNPATH ("basic_functions/nodeBurn.ks", 0, horizontalVelocity:MAG, -horizontalVelocity).
-		CLEARVECDRAWS().
-		LOCK STEERING TO smoothRotate((-SHIP:VELOCITY:SURFACE):DIRECTION).
-		WAIT 5.
-
-	
+		RUNPATH("basic_functions/stopAtVector.ks", _coordinates).	
 	
 	//----------------------------------------------------\
 	//Perform the landing---------------------------------|
+		RUNPATH ("basic_functions/suicideBurn.ks", targetCraft).
+		
+		LOCAL wv IS VECDRAWARGS(_coordinates:POSITION, (_coordinates:POSITION - BODY:POSITION):NORMALIZED*1000,GREEN,"Landing position",1,TRUE).
 
 
 //--------------------------------------------------------------------------\
@@ -213,7 +234,7 @@ UNLOCK THROTTLE.
 
 
 	//Returns user control
-	SET SHIP:CONTROL:NEUTRALIZE to TRUE.
+	SET SHIP:CONTROL:NEUTRALIZE TO TRUE.
 	SAS OFF.
 	RCS OFF.
 	
@@ -221,25 +242,5 @@ UNLOCK THROTTLE.
 	UNLOCK STEERING.
 	UNLOCK THROTTLE.
 
-	CLEARVECDRAWS().
+	//CLEARVECDRAWS().
 	WAIT 1.
-	
-
-//------------------------------------------------------------------------------------------------------\
-//												FUNCTIONS												|
-//------------------------------------------------------------------------------------------------------/	
-	
-
-	FUNCTION wrap360{
-		PARAMETER _angle.
-		IF(_angle < 0){ RETURN _angle + 360. }
-		ELSE IF(_angle > 360 ){ RETURN _angle - 360. }
-		RETURN _angle.
-	}
-
-	FUNCTION lngWrap360 {
-		PARAMETER _angle.
-		IF(_angle < -180){ RETURN _angle + 360. }
-		ELSE IF(_angle > 180 ){ RETURN _angle - 360. }
-		RETURN _angle.
-	}

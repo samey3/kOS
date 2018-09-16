@@ -156,6 +156,13 @@ FUNCTION predictImpactCoords{
 		PARAMETER _refAltitude IS 0.
 		PARAMETER _inclination IS 0.	
 		PARAMETER _meanShift IS 0.
+		
+	//--------------------------------------------------------------------------\
+	//								 Imports					   				|
+	//--------------------------------------------------------------------------/
+
+
+		RUNONCEPATH("lib/math.ks").
 	
 	
 	//--------------------------------------------------------------------------\
@@ -199,7 +206,7 @@ FUNCTION predictImpactCoords{
 		//Intercept location
 		LOCAL interceptVector IS ANGLEAXIS(-trueAnomaly_impact, momentumVector)*eccentricityVector.
 		LOCAL interceptCoordinates IS SHIP:BODY:GEOPOSITIONOF(SHIP:BODY:POSITION + interceptVector).
-		LOCAL impactLng IS lngWrap360(interceptCoordinates:LNG - timeRotateLng).
+		LOCAL impactLng IS wrap180(interceptCoordinates:LNG - timeRotateLng).
 		
 		RETURN LATLNG(interceptCoordinates:LAT, impactLng).
 }

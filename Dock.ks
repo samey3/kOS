@@ -21,7 +21,7 @@ CLEARSCREEN.
 	LOCK STEERING TO SHIP:FACING.
 	LOCK THROTTLE TO 0.
 	UNLOCK STEERING.
-	UNLOCK THROTTLE.	
+	UNLOCK THROTTLE.
 	
 	
 //---------------------------------------------------------------------------------\
@@ -38,7 +38,7 @@ CLEARSCREEN.
 		LOCAL tp_index IS portNum. //0
 		
 	LOCAL s_ports IS LIST().
-		FOR p IN ship:DOCKINGPORTS { IF p:STATE = "Ready" { s_ports:ADD(p). } }
+		FOR p IN SHIP:DOCKINGPORTS { IF p:STATE = "Ready" { s_ports:ADD(p). } }
 		LOCAL sp_index IS 0.
 	
 	IF(t_ports:LENGTH = 0 OR s_ports:LENGTH = 0){

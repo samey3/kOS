@@ -175,10 +175,3 @@ FUNCTION smoothRotate {
     IF VANG(dir:FOREVECTOR,curF) < 90{SET rotR TO ANGLEAXIS(min(0.5,VANG(dir:TOPVECTOR,curR)/spd),VCRS(curR,dir:TOPVECTOR)).}
     RETURN LOOKDIRUP(ANGLEAXIS(min(2,VANG(dir:FOREVECTOR,curF)/spd),VCRS(curF,dir:FOREVECTOR))*curF,rotR*curR).
 }
-
-FUNCTION removeDrawnVecs {
-	SET surfaceNormalVec:SHOW TO FALSE.
-	SET steeringVec:SHOW TO FALSE.
-	SET nextNodeVec:SHOW TO FALSE.
-	SET epicenterVec:SHOW TO FALSE.
-}

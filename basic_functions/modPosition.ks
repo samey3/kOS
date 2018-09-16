@@ -17,11 +17,18 @@
 
 
 	RUNONCEPATH("lib/shipControl.ks").
+	RUNONCEPATH("lib/math.ks").
 	
 	
 //--------------------------------------------------------------------------\
 //								Variables					   				|
 //--------------------------------------------------------------------------/		
+
+		LOCAL LOCK normalVec TO (hostObj:POSITION - BODY:POSITION).
+			
+		LOCAL LOCK positionVec TO (hostObj:POSITION - SHIP:POSITION).
+		LOCAL LOCK toVelVec TO projectToPlane(positionVec:NORMALIZED*(positionVec:MAG/10), normalVec).		
+		
 			
 			
 	//--------------------------------------\
@@ -33,9 +40,14 @@
 		LOCAL LOCK Za TO SHIP:FACING:STARVECTOR.
 
 		//To desired velocity and relative velocity vectors (custom axis)
-		SET toVector TO V(VDOT(toVector,Xa),VDOT(toVector,Ya),VDOT(toVector,Za)).
-		LOCAL LOCK c_relVel TO V(VDOT((SHIP:VELOCITY:ORBIT - hostObj:VELOCITY:ORBIT),Xa),VDOT((SHIP:VELOCITY:ORBIT - hostObj:VELOCITY:ORBIT),Ya),VDOT((SHIP:VELOCITY:ORBIT - hostObj:VELOCITY:ORBIT),Za)).
-		LOCAL LOCK differenceVec TO (toVector - c_relVel).	
+		//LOCAL toVector IS V(VDOT(toVector,Xa),VDOT(toVector,Ya),VDOT(toVector,Za)).
+		//LOCAL LOCK c_relVel TO V(VDOT((SHIP:VELOCITY:ORBIT - hostObj:VELOCITY:ORBIT),Xa),VDOT((SHIP:VELOCITY:ORBIT - hostObj:VELOCITY:ORBIT),Ya),VDOT((SHIP:VELOCITY:ORBIT - hostObj:VELOCITY:ORBIT),Za)).
+		//LOCAL LOCK differenceVec TO (toVector - c_relVel).	
+
+		
+		//toVector
+		LOCAL LOCK differenceVector TO (toVelVec - (SHIP:VELOCITY:ORBIT - hostObj:VELOCITY:ORBIT)).
+		LOCAL LOCK differenceVec TO V(VDOT(differenceVector,Xa),VDOT(differenceVector,Ya),VDOT(differenceVector,Za)).
 
 		
 	//--------------------------------------\
@@ -99,23 +111,30 @@
 		IF (modeString <> "(low speed)" AND differenceVec:MAG <= 0.2) {
 			SET modeString TO "(low speed)".
 			FOR block IN rcsList {
-				block:SETFIELD("thrust limiter", rcsLimiter*10). }
+				//block:SETFIELD("thrust limiter", rcsLimiter*10). 
+			}
 		}
 		
 		IF(differenceVec:X > minDiff OR differenceVec:X < -minDiff) {
-			SET SHIP:CONTROL:FORE TO thrustPercent*(differenceVec:X/base_acceleration). SET rcsX TO TRUE. }
+			//SET SHIP:CONTROL:FORE TO thrustPercent*(differenceVec:X/base_acceleration). SET rcsX TO TRUE. }
+			SET SHIP:CONTROL:FORE TO thrustPercent*(differenceVec:NORMALIZED:X/2). SET rcsX TO TRUE. }
 		ELSE {
-			SET rcsX TO FALSE. }
+			//SET rcsX TO FALSE. 
+			}
 	
 		IF(differenceVec:Y > minDiff OR differenceVec:Y < -minDiff) {
-			SET SHIP:CONTROL:TOP TO thrustPercent*(differenceVec:Y/base_acceleration). SET rcsY TO TRUE. }
+			//SET SHIP:CONTROL:TOP TO thrustPercent*(differenceVec:Y/base_acceleration). SET rcsY TO TRUE. }
+			SET SHIP:CONTROL:TOP TO thrustPercent*(differenceVec:NORMALIZED:Y). SET rcsY TO TRUE. }
 		ELSE {
-			SET rcsY TO FALSE. }
+			//SET rcsY TO FALSE. 
+			}
 	
 		IF(differenceVec:Z > minDiff OR differenceVec:Z < -minDiff) {
-			SET SHIP:CONTROL:STARBOARD TO thrustPercent*(differenceVec:Z/base_acceleration). SET rcsZ TO TRUE. }
+			//SET SHIP:CONTROL:STARBOARD TO thrustPercent*(differenceVec:Z/base_acceleration). SET rcsZ TO TRUE. }
+			SET SHIP:CONTROL:STARBOARD TO thrustPercent*(differenceVec:NORMALIZED:Z). SET rcsZ TO TRUE. }
 		ELSE {
-			SET rcsZ TO FALSE. }
+			//SET rcsZ TO FALSE. 
+			}
 	
 	
 		CLEARSCREEN.

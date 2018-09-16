@@ -1,0 +1,2 @@
+Travel_path still uses old smoothRotate.
+Can this be switched to the new steeringManager?

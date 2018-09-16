@@ -11,6 +11,14 @@
 	
 	
 //--------------------------------------------------------------------------\
+//								 Imports					   				|
+//--------------------------------------------------------------------------/
+
+
+	RUNONCEPATH("lib/shipControl.ks").
+	
+	
+//--------------------------------------------------------------------------\
 //							 Reboot conditions					   			|
 //--------------------------------------------------------------------------/
 	
@@ -82,6 +90,10 @@
 	//This won't work properly on longer burns
 	//LOCAL velFuture IS VELOCITYAT(SHIP, TIME:SECONDS + _timeToPeak). // + burnTime/2
 	//LOCAL expectedVector IS velFuture:ORBIT + t_vec*_burnDV. //Need to find the expected vector at Apo + 1/2 burnTime
+	
+	//Based on ship properties, should find the VANG between current and required, and find the time to complete the rotation
+	//based on the MAXSTOPPINGTIME and such of the steering manager.
+	//Can then allow orientation time (+ 10 seconds or so) based on that.
 
 
 //--------------------------------------------------------------------------\
@@ -91,7 +103,6 @@
 
 	//Disables user control
 	SET CONTROLSTICK to SHIP:CONTROL. 
-	SAS ON.
 	RCS OFF. //ON.
 	WAIT waitTime. //Incase ship was moving
 	
@@ -105,9 +116,11 @@
 	}
 	
 	//(TRIGGER) Once there are 20 seconds until the start of the burn, orientate
-	WHEN (timeLeft <= (burnTime/2 + 20)) THEN { LOCK STEERING TO smoothRotate(t_vec:DIRECTION). }
+	//Why is this in a trigger, doesn't need to be?
+	WHEN (timeLeft <= (burnTime/2 + 20)) THEN { LOCK STEERING TO smoothRotate(t_vec:DIRECTION).}
 	
 	//Display info until the burn starts
+	RCS ON.
 	UNTIL timeLeft <= burnTime/2{
 		CLEARSCREEN.
 		PRINT "Node-burn subscript".
@@ -125,11 +138,13 @@
 		
 		WAIT 0.1.
 	}
+	RCS OFF.
 	
 	
 	//Perform the burn
+	LOCAL lockHeading IS t_vec:DIRECTION.
+	LOCK STEERING TO smoothRotate(lockHeading).
 	LOCK THROTTLE TO thrustPercent. 
-
 	IF(burnTime > 1.5){
 		WAIT burnTime - 1.
 			//Throttles down linearly for the last 2 seconds
@@ -152,7 +167,6 @@
 	
 	//Returns user control
 	SET SHIP:CONTROL:NEUTRALIZE to TRUE.
-	SAS OFF.
 	RCS OFF.
 	
 	//Unlock all variables		
@@ -168,20 +182,4 @@
 	//Remove drawn vectors
 	CLEARVECDRAWS().
 	
-	WAIT 1.
-
-	
-//------------------------------------------------------------------------------------------------------\
-//												FUNCTIONS												|
-//------------------------------------------------------------------------------------------------------/
-		
-
-	FUNCTION smoothRotate {
-		PARAMETER dir.
-		LOCAL spd IS max(SHIP:ANGULARMOMENTUM:MAG/10,4).
-		LOCAL curF IS SHIP:FACING:FOREVECTOR.
-		LOCAL curR IS SHIP:FACING:TOPVECTOR.
-		LOCAL rotR IS R(0,0,0).
-		IF VANG(dir:FOREVECTOR,curF) < 90{SET rotR TO ANGLEAXIS(min(0.5,VANG(dir:TOPVECTOR,curR)/spd),VCRS(curR,dir:TOPVECTOR)).}
-		RETURN LOOKDIRUP(ANGLEAXIS(min(2,VANG(dir:FOREVECTOR,curF)/spd),VCRS(curF,dir:FOREVECTOR))*curF,rotR*curR).
-	}
+	//WAIT 1.
