@@ -1,5 +1,3 @@
-//runoncepath("lib/libcosinerule").
-//runoncepath("lib/libmanat").
 
 LOCAL requestPath IS "processing/requests/job_request.kr".
 LOCAL resultPath IS  "processing/requests/job_result.kr".

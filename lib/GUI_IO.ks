@@ -45,7 +45,7 @@ FUNCTION selectCoordinates {
 				LIST TARGETS IN vesselList.
 				FOR vessel IN vesselList {
 					IF(vessel:BODY = SHIP:BODY AND (vessel:STATUS = "LANDED" OR vessel:STATUS = "SPLASHED")){
-						SET shipLexicon[vessel:NAME] TO vessel:GEOPOSITION.	
+						SET shipLexicon[vessel:NAME] TO vessel.	
 					}
 				}
 				FOR vesselKey IN shipLexicon:KEYS {
@@ -63,9 +63,12 @@ FUNCTION selectCoordinates {
 	WAIT UNTIL(okButton:TAKEPRESS AND chosenCoordinates <> 0).
 		gui:HIDE().
 		
+		//Return just the coordinates
 		IF(chosenCoordinates:ISTYPE("Vessel") AND landOnTop = FALSE){
 			SET chosenCoordinates TO chosenCoordinates:GEOPOSITION.
 		}		
+
+		//Return the vessel itself
 		RETURN chosenCoordinates.
 }
 

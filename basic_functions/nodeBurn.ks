@@ -117,7 +117,7 @@
 	
 	//(TRIGGER) Once there are 20 seconds until the start of the burn, orientate
 	//Why is this in a trigger, doesn't need to be?
-	WHEN (timeLeft <= (burnTime/2 + 20)) THEN { LOCK STEERING TO smoothRotate(t_vec:DIRECTION).}
+	WHEN (timeLeft <= (burnTime/2 + 20)) THEN { LOCK STEERING TO t_vec:DIRECTION.}
 	
 	//Display info until the burn starts
 	RCS ON.
@@ -143,7 +143,7 @@
 	
 	//Perform the burn
 	LOCAL lockHeading IS t_vec:DIRECTION.
-	LOCK STEERING TO smoothRotate(lockHeading).
+	LOCK STEERING TO lockHeading.
 	LOCK THROTTLE TO thrustPercent. 
 	IF(burnTime > 1.5){
 		WAIT burnTime - 1.

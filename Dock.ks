@@ -11,6 +11,7 @@ CLEARSCREEN.
 		SET _targetCraft TO TARGET. }	 
 	PARAMETER autoChoose IS TRUE. //If enabled, automatically chooses next free docking port
 	PARAMETER portNum IS 0. //If you want to autodock, and KNOW which port specifically. This could cause crashes if not done properly.
+	PARAMETER standOffDistance IS 100.
 	
 	
 //---------------------------------------------------------------------------------\
@@ -80,7 +81,9 @@ CLEARSCREEN.
 	
 	//---------------------------------\
 	//Move to 100m---------------------|
-	RUNPATH("/basic_functions/moveToPoint.ks", _targetCraft, (SHIP:POSITION - _targetCraft:POSITION):NORMALIZED*100, 0).
+	IF((SHIP:POSITION - _targetCraft:POSITION):MAG < standOffDistance){
+		RUNPATH("/basic_functions/moveToPoint.ks", _targetCraft, (SHIP:POSITION - _targetCraft:POSITION):NORMALIZED*standOffDistance, 0).
+	}
 	
 	
 	//---------------------------------\

@@ -8,13 +8,13 @@
 
 	
 	//This is used if you are trying to land on an object
-	PARAMETER _onCraft IS 0.
+	PARAMETER _landObject IS 0.
 	
 
 //--------------------------------------------------------------------------\
 //								 Imports					   				|
 //--------------------------------------------------------------------------/
-	
+
 	
 	RUNONCEPATH("lib/shipControl.ks").
 
@@ -30,23 +30,23 @@
 	LOCAL LOCK horizontalVector TO projectToPlane((_coordinates:POSITION - SHIP:POSITION), planeNormalVector).	
 
 	//Ship and landing heights
-	LOCAL shipHeight IS findCraftHeight(SHIP) + 1. //Landing legs position is at the top? So doesn't get the full length. Could we perhaps just take the top of the target and use that for distance?
+	LOCAL shipHeight IS findCraftHeight(SHIP) - 9. //Landing legs position is at the top? So doesn't get the full length. Could we perhaps just take the top of the target and use that for distance?
 	//LOCAL landingHeight IS 0. //Additional distance above the surface
 	LOCAL targetHeightAdded IS FALSE.
 	
 	//Descent properties
-	LOCAL LOCK altitude TO (SHIP:POSITION - SHIP:BODY:POSITION):MAG.
-	LOCK distanceLeft TO (SHIP:POSITION - SHIP:BODY:POSITION):MAG - SHIP:BODY:RADIUS.
-	IF(SHIP:GEOPOSITION:TERRAINHEIGHT > 0){
-		LOCK distanceLeft TO (SHIP:POSITION - SHIP:BODY:POSITION):MAG - SHIP:BODY:RADIUS - SHIP:GEOPOSITION:TERRAINHEIGHT.
-	}	
+	LOCK distanceLeft TO (SHIP:POSITION - SHIP:BODY:POSITION):MAG - SHIP:BODY:RADIUS - MAX(SHIP:GEOPOSITION:TERRAINHEIGHT, 0).
+	//IF(SHIP:GEOPOSITION:TERRAINHEIGHT > 0){
+	//	LOCK distanceLeft TO (SHIP:POSITION - SHIP:BODY:POSITION):MAG - SHIP:BODY:RADIUS - SHIP:GEOPOSITION:TERRAINHEIGHT.
+	//}
+	LOCAL LOCK altitude TO (SHIP:POSITION - SHIP:BODY:POSITION):MAG.	
 	LOCAL LOCK v_i TO -VERTICALSPEED.
 	LOCAL v_f IS 0.
 
 	//Acceleration properties
 	LOCAL base_acceleration IS (-SHIP:AVAILABLETHRUST/SHIP:MASS)*0.90. //Makes estimates with 90% avaiable thrust, so it may increase throttle later if needed
 	LOCAL effective_acceleration IS base_acceleration + SHIP:BODY:MU/(altitude^2).
-	LOCAL LOCK stopDistance TO ((v_f^2 - v_i^2)/(2*effective_acceleration)) + shipHeight. //5 ship height
+	LOCAL LOCK stopDistance TO ((v_f^2 - v_i^2)/(2*effective_acceleration)) + shipHeight - 3. //5 ship height
 		
 	//Sets up the RCS thrusters
 	LOCAL rcsLimiter IS (SHIP:MASS/2.6).
@@ -60,6 +60,16 @@
 	FOR block IN rcsList {
 		block:SETFIELD("thrust limiter", rcsLimiter*100). //30
 	}
+	
+	//Target properties
+	LOCAL landingCoordinates IS 0.
+	IF(_landObject <> 0 AND _landObject:ISTYPE("Vessel")){
+		SET landingCoordinates TO _landObject:GEOPOSITION. 
+	}
+	ELSE IF (_landObject <> 0){
+		SET landingCoordinates TO _landObject. }
+		
+	
 		
 
 //--------------------------------------------------------------------------\
@@ -77,7 +87,22 @@
 
 	//Uses the prediction for deciding when to start the burn
 	RCS ON.
-	LOCK STEERING TO smoothRotate((-SHIP:VELOCITY:SURFACE):DIRECTION, 0.05).
+	LOCK STEERING TO ((-SHIP:VELOCITY:SURFACE):DIRECTION).
+	
+	//IF(landingCoordinates <> 0){	
+		LOCK STEERING TO (-ADDONS:TR:PLANNEDVECTOR):DIRECTION.
+		ADDONS:TR:SETTARGET(landingCoordinates).
+		LOCK STEERING TO (-ADDONS:TR:CORRECTEDVECTOR):DIRECTION.
+		
+		//LOCK STEERING TO ((-ADDONS:TR:PLANNEDVECTOR) + 100*(-(ADDONS:TR:CORRECTEDVECTOR - ADDONS:TR:PLANNEDVECTOR))):DIRECTION.	
+		LOCAL LOCK impactDif TO (landingCoordinates:POSITION - ADDONS:TR:IMPACTPOS:POSITION).	
+		LOCK STEERING TO smoothRotate((30*(-ADDONS:TR:PLANNEDVECTOR:NORMALIZED) - SQRT(impactDif:MAG)*impactDif:NORMALIZED):DIRECTION, 30). //Actually works
+		//LOCK STEERING TO (45*(-ADDONS:TR:PLANNEDVECTOR:NORMALIZED) - (45*(SQRT(impactDif:MAG)/(SQRT(impactDif:MAG) + 10)))*impactDif:NORMALIZED):DIRECTION.		
+	//}
+	LOCAL t1 IS 0.
+	LOCAL t2 IS 0.
+	LOCAL t3 IS 0.
+	
 	UNTIL(distanceLeft <= (stopDistance + ABS(VERTICALSPEED*0.02))){
 		CLEARSCREEN.
 		PRINT("ALT : " + distanceLeft).
@@ -88,15 +113,13 @@
 		PRINT("Distance to burn : " + (distanceLeft - (stopDistance + ABS(VERTICALSPEED*0.02)))).
 		PRINT("Ship height : " + shipHeight).
 		
-		RUNPATH("basic_functions/modVelocityPlane_iterative.ks", V(0,0,0), planeNormalVector, rcsList:LENGTH).
-		//RUNPATH ("basic_functions/modPositionPlane_iterative.ks", _onCraft, V(0,0,0), planeNormalVector).
-		
-		
-		//If landing on a target, adds the targets height to the shipHeight once it is unpacked
-		IF(_onCraft <> 0 AND targetHeightAdded = FALSE AND _onCraft:UNPACKED){
-			SET shipHeight TO shipHeight + findCraftHeight(_onCraft).
-			SET targetHeightAdded TO TRUE.
-		}
+		//RUNPATH("basic_functions/modVelocityPlane_iterative.ks", V(0,0,0), planeNormalVector, rcsList:LENGTH).		
+		//If _landObject, do this instead vvv
+		//RUNPATH("basic_functions/modImpact_iterative.ks", V(0,0,0), _coordinates, rcsList:LENGTH).		
+			
+		SET t1 TO VECDRAWARGS(SHIP:POSITION, 45*(-ADDONS:TR:PLANNEDVECTOR:NORMALIZED),RED,"Planned",1,TRUE).
+		SET t2 TO VECDRAWARGS(SHIP:POSITION, (45*(SQRT(impactDif:MAG)/(SQRT(impactDif:MAG) + 10)))*impactDif:NORMALIZED,GREEN,"Mod",1,TRUE).
+		SET t3 TO VECDRAWARGS(SHIP:POSITION, (45*(-ADDONS:TR:PLANNEDVECTOR:NORMALIZED) - (45*(SQRT(impactDif:MAG)/(SQRT(impactDif:MAG) + 10)))*impactDif:NORMALIZED),YELLOW,"Result",1,TRUE).
 	}	
 
 	//Varies the thrust required the descent
@@ -105,6 +128,15 @@
 	LOCK thrustPercent TO Ar/max_acceleration.
 	
 	LOCK THROTTLE TO thrustPercent.
+	IF(landingCoordinates <> 0 AND projectToPlane((landingCoordinates:POSITION - SHIP:POSITION), planeNormalVector):MAG < 200){
+		LOCK STEERING TO (50*(-ADDONS:TR:PLANNEDVECTOR:NORMALIZED) + SQRT(impactDif:MAG)*impactDif:NORMALIZED):DIRECTION.
+	}
+	ELSE {
+		//If too far from the target, abort and land at current location
+		LOCK STEERING TO SRFRETROGRADE.
+	}
+	
+	
 	GEAR ON.
 	UNTIL (v_i < 0.5){
 		CLEARSCREEN.
@@ -112,22 +144,22 @@
 		PRINT("Max : " + max_acceleration).
 		PRINT("Ship height : " + shipHeight).
 		
-		RUNPATH("basic_functions/modVelocityPlane_iterative.ks", V(0,0,0), planeNormalVector, rcsList:LENGTH).
-		//RUNPATH ("basic_functions/modPositionPlane_iterative.ks", _onCraft, V(0,0,0), planeNormalVector).
+		//RUNPATH("basic_functions/modVelocityPlane_iterative.ks", V(0,0,0), planeNormalVector, rcsList:LENGTH).
+		//RUNPATH ("basic_functions/modPositionPlane_iterative.ks", _landObject, V(0,0,0), planeNormalVector).
 		
 		//If landing on a target, adds the targets height to the shipHeight once it is unpacked
-		IF(_onCraft <> 0 AND targetHeightAdded = FALSE AND _onCraft:UNPACKED){
+		IF(_landObject <> 0 AND _landObject:ISTYPE("Vessel") AND targetHeightAdded = FALSE AND _landObject:UNPACKED){
 			//If terrainHeight < 0, assume in ocean. Assume roughly half submerged
-			IF(_onCraft:GEOPOSITION:TERRAINHEIGHT > 0){
-				SET shipHeight TO shipHeight + findCraftHeight(_onCraft). } 
+			IF(_landObject:GEOPOSITION:TERRAINHEIGHT > 0){
+				SET shipHeight TO shipHeight + findCraftHeight(_landObject). } 
 			ELSE {
-				SET shipHeight TO shipHeight + findCraftHeight(_onCraft)/3. }
+				SET shipHeight TO shipHeight + findCraftHeight(_landObject)/3. }
 				
 			SET targetHeightAdded TO TRUE.
 		}
 	}
 	LOCK THROTTLE TO 0.
-	LOCK STEERING TO smoothRotate(SHIP:UP).
+	LOCK STEERING TO (SHIP:UP).
 	RCS OFF.
 	WAIT 1.
 	

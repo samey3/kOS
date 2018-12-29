@@ -1,4 +1,6 @@
 @lazyglobal OFF.
+RUNONCEPATH("lib/config.ks").
+
 CLEARSCREEN.
 LOCK STEERING TO SHIP:FACING.
 LOCK THROTTLE TO 0.
@@ -6,7 +8,6 @@ UNLOCK STEERING.
 UNLOCK THROTTLE.
 
 
-RUNONCEPATH("lib/GUI_IO.ks").
+configureVessel().
+RUNONCEPATH("Land.ks", 1). //LATLNG(-0.0972078366335618,-74.5576783933035)
 
-
-PRINT("Selected : " + selectCoordinates()).

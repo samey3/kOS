@@ -36,3 +36,22 @@ _coordinates variable coming out of nowhere???
 Can have a global variable 'currentScript' that is modified IMMEDIATELY upon a new script
 being run. Can have an ON in a ship config or shipSystems.ks that waits for a change,
 and does any appropriate staging/whatever.
+
+
+
+
+
+
+Make a modified docking script to make use of the grabbing claw.
+Make a bit for attaching it to others.
+With this, add a tag to a docking port, e.g. '1'. The script will increment dock number
+Find 1a, pick it up, attach to 1b. Increment and do 2. Keep going until done.
+If no 1, check for 2s.. and so on until 20 or so.
+
+
+
+NEW NEW NEW
+For StopAtVector, only set throttle if req_accel > 0.9
+Otherwise set to 0. Stops the gradual slowdown in favour of a fast one.
+Also, make one that aligns heading to trajectory.
+As such, only take the horizontal slowdown component of your thrust vector.

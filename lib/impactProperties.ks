@@ -1,4 +1,18 @@
-//Have the two 'current' ones just return the trajectories mod values instead if there is an atmosphere.
+
+//-----------------------------------------------------------------------------------------------------------
+// 	Name: willImpact
+//	Parameters : 
+//		- (optional) vessel
+//	
+//-----------------------------------------------------------------------------------------------------------
+FUNCTION willImpact{
+	PARAMETER _vessel.
+
+	IF(_vessel:ORBIT:PERIAPSIS < 0){ RETURN TRUE. }
+	ELSE IF (_vessel = SHIP AND ADDONS:TR:AVAILABLE AND ADDONS:TR:HASIMPACT){ RETURN TRUE. }
+	ELSE { RETURN FALSE. }
+}
+
 
 //-----------------------------------------------------------------------------------------------------------
 // 	Name: getImpactTime
@@ -6,6 +20,7 @@
 //		- Reference altitude (altitude above sea-level)
 //	
 //-----------------------------------------------------------------------------------------------------------
+//Get impact time in-atmo via Trajectories
 FUNCTION getImpactTime{
 
 	//--------------------------------------------------------------------------\
@@ -80,6 +95,20 @@ FUNCTION getImpactCoords{
 		
 		
 	//--------------------------------------------------------------------------\
+	//							Trajectories mod case							|
+	//--------------------------------------------------------------------------/
+	
+	
+		//As kOS is quite limited in performing operations on-the-fly, the trajectories
+		//add-on is used instead if we are predicting impact location on a body
+		//with an atmosphere
+	
+		IF(SHIP:BODY:ATM:EXISTS AND ADDONS:TR:HASIMPACT){
+			RETURN ADDONS:TR:IMPACTPOS.
+		}
+		
+		
+	//--------------------------------------------------------------------------\
 	//								Variables					   				|
 	//--------------------------------------------------------------------------/
 	
@@ -134,7 +163,7 @@ FUNCTION getImpactCoords{
 
 
 //-----------------------------------------------------------------------------------------------------------
-// 	Name: findImpactCoords
+// 	Name: predictImpactCoords
 //	Parameters : 
 //		- Periapsis
 //		- Reference altitude (altitude above sea-level)
@@ -154,8 +183,9 @@ FUNCTION predictImpactCoords{
 	
 		PARAMETER _periapsis.
 		PARAMETER _refAltitude IS 0.
-		PARAMETER _inclination IS 0.	
+		PARAMETER _inclination IS 0.
 		PARAMETER _meanShift IS 0.
+		
 		
 	//--------------------------------------------------------------------------\
 	//								 Imports					   				|

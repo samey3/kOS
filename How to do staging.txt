@@ -1,0 +1,12 @@
+All major scripts will write to the same global variable upon start/finish and other spots, etc.
+The system manager will have a section that loops over all parts and checks their tags.
+Put all parts with the same tags in a list, and then puts all lists in a hash.
+
+Upon global variable state change, check the new string.
+If there exists an entry in the hash with that string, pull the list.
+Stage/activate all the parts in the list.
+
+
+
+^^^This won't work directly? Unless we only do the output in top level scriptsfor the most part.
+Scripts that aren't run more than once, else that presents a problem.

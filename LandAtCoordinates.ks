@@ -12,7 +12,7 @@
 
 
 	CLEARSCREEN.
-	LOCK STEERING TO SHIP:FACING.
+	LOCK STEERING TO smoothRotate(SHIP:FACING, 5). //Do we need to do this for every single script...? //smoothRotate can always pull its value maybe
 	LOCK THROTTLE TO 0.
 	UNLOCK STEERING.
 	UNLOCK THROTTLE.
@@ -27,8 +27,8 @@
 	PARAMETER _coordinates IS selectCoordinates().
 		//If it returned a vessel
 		LOCAL targetCraft IS 0.
+		SET targetCraft TO _coordinates.
 		IF(_coordinates:ISTYPE("Vessel")){
-			SET targetCraft TO _coordinates.
 			SET _coordinates TO _coordinates:GEOPOSITION.
 		}
 		
@@ -81,6 +81,7 @@
 //--------------------------------------------------------------------------/
 
 
+	LOCK STEERING TO smoothRotate(SHIP:FACING, 5).
 	//----------------------------------------------------\
 	//Iterate the latitude--------------------------------|
 		LOCAL valuePasses IS 0.
@@ -201,13 +202,16 @@
 		LOCAL timeToAbove IS getImpactTime(targetHeight + stopAltitude).
 		LOCAL pre_surfaceVelocity IS projectToPlane(VELOCITYAT(SHIP, TIME:SECONDS + timeToAbove):SURFACE, (_coordinates:POSITION - BODY:POSITION)).
 		LOCAL pre_burnTime IS pre_surfaceVelocity:MAG/base_acceleration.		
-		LOCK STEERING TO smoothRotate(RETROGRADE).
 		
 		IF(SHIP:BODY:ATM:EXISTS){
-			warpTime(timeToAbove - pre_burnTime - 60). }
+			warpTime(timeToAbove - pre_burnTime - 60 - 30). }
 		ELSE {
 			warpTime(timeToAbove - pre_burnTime - 30). }
 		//60 atmosphere, 30 vacuum 
+		
+		RCS ON.
+		LOCK STEERING TO smoothRotate(RETROGRADE, 10).
+		WAIT 20.
 		
 	//----------------------------------------------------\
 	//Ensure correct velocity direction-------------------|	
@@ -219,7 +223,8 @@
 
 	//----------------------------------------------------\
 	//Reduce horizontal velocity above target-------------|
-		RUNPATH("basic_functions/stopAtVector.ks", _coordinates).	
+		RUNPATH("basic_functions/stopAtVector.ks", _coordinates, TRUE).	
+		//we can perhaps use the correctedVec in a sub-script for correcting path? What exactly is it for?
 	
 	//----------------------------------------------------\
 	//Perform the landing---------------------------------|

@@ -1,6 +1,7 @@
 //Rotates the vessel to face the given direction
 //This function is purely for legacy support now
 //Should it be phased out?
+//DEPRECATE THIS, or keep for precise controls?
 FUNCTION smoothRotate {
 	PARAMETER _dir.
 	PARAMETER _maxTime IS 0.1.
@@ -21,7 +22,7 @@ FUNCTION smoothRotate {
 //A much more efficient one would use solar panel readouts
 FUNCTION adaptiveLighting {
 	PARAMETER _state.
-	LOCK checker TO _state.
+	LOCAL LOCK checker TO _state.
 	ON (((((SHIP:POSITION - BODY:POSITION) - (((SHIP:POSITION - BODY:POSITION)*(BODY:POSITION - BODY("SUN"):POSITION))/((BODY:POSITION - BODY("SUN"):POSITION):MAG^2))*(BODY:POSITION - BODY("SUN"):POSITION)):MAG < SHIP:BODY:RADIUS) AND ((SHIP:POSITION - BODY("SUN"):POSITION):MAG > (BODY:POSITION - BODY("SUN"):POSITION):MAG)) AND checker) {
 		LOCAL setToState IS ((((SHIP:POSITION - BODY:POSITION) - (((SHIP:POSITION - BODY:POSITION)*(BODY:POSITION - BODY("SUN"):POSITION))/((BODY:POSITION - BODY("SUN"):POSITION):MAG^2))*(BODY:POSITION - BODY("SUN"):POSITION)):MAG < SHIP:BODY:RADIUS) AND ((SHIP:POSITION - BODY("SUN"):POSITION):MAG > (BODY:POSITION - BODY("SUN"):POSITION):MAG)).
 		
@@ -117,6 +118,8 @@ FUNCTION findCraftHeight {
 	RETURN biggestLower + biggestUpper.
 }
 
+//ONLY FINDS TO THE CENTER OF A PART.
+//So how do we find the true-bottom-height?
 
 
 
