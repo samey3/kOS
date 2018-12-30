@@ -270,7 +270,8 @@
 			//Perform the burn------------------------------------|		
 				LOCK STEERING TO SRFRETROGRADE.
 				LOCK THROTTLE TO 1.
-				UNTIL (impactDifference < 100){		
+				//Until error is sufficiently small, or most horizontal velocity has been burned off
+				UNTIL (impactDifference < 100 OR VANG(projectToPlane(SRFRETROGRADE:VECTOR, planeNormalVector), initialHorizontalVector) < 90){		
 					CLEARSCREEN.
 					PRINT("Difference : " + impactDifference).
 				}
