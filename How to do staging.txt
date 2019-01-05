@@ -10,3 +10,7 @@ Stage/activate all the parts in the list.
 
 ^^^This won't work directly? Unless we only do the output in top level scriptsfor the most part.
 Scripts that aren't run more than once, else that presents a problem.
+
+
+Can use TWO global variables to uniquely identify all points.
+Either one can be in the mission builder and one in the vessel-specific script, or put them both in vessel-specific?

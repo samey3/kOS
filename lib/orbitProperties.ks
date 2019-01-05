@@ -1,4 +1,11 @@
 
+
+FUNCTION solarVelocity {
+	PARAMETER _body.
+	RETURN -(SUN:VELOCITY:ORBIT - _body:VELOCITY:ORBIT).
+}
+
+
 //-----------------------------------------------------------------------------------------------------------
 // 	Name: getImpactTime
 //	Parameters : 
@@ -37,6 +44,7 @@ FUNCTION meanAnomalyAtAltitude {
 }
 
 
+//Whats this even for...?
 FUNCTION timeToVectorProjection {
 
 	//--------------------------------------------------------------------------\
@@ -73,7 +81,7 @@ FUNCTION timeToVectorProjection {
 
 
 
-GET MA OF VECTOR
-Project to the orbit plane
-get ta,
-convert to ma
+//GET MA OF VECTOR
+//Project to the orbit plane
+//get ta,
+//convert to ma

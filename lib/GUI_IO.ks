@@ -1,4 +1,4 @@
-
+//This will contain the various GUI windows that may pop up. Removes large chunks of GUI code from functionality scripts.
 
 //Manual or from files
 FUNCTION selectCoordinates {	

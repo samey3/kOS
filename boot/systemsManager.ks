@@ -1,10 +1,10 @@
 @lazyglobal OFF.
-runoncepath("0:/lib/shipControl.ks").
+RUNONCEPATH("0:/RESTRUCTURE V3/lib/shipControl.ks").
 
-PRINT("Enabled adaptive lighting.").
+//Enable the automatic ship systems.
 adaptiveLighting(TRUE).
+adaptivePanels(TRUE).
+autoStaging(TRUE).
 
-WAIT UNTIL(FALSE). //Does not let the manager end.
-
-
-//Do some checks, e.g. retract panels when entering atmosphere
+//Does not let the manager end.
+WAIT UNTIL(FALSE). 

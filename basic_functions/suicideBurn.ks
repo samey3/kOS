@@ -30,7 +30,7 @@
 	LOCAL LOCK horizontalVector TO projectToPlane((_coordinates:POSITION - SHIP:POSITION), planeNormalVector).	
 
 	//Ship and landing heights
-	LOCAL shipHeight IS findCraftHeight(SHIP) - 9. //Landing legs position is at the top? So doesn't get the full length. Could we perhaps just take the top of the target and use that for distance?
+	LOCAL shipHeight IS findCraftHeight(SHIP). //Landing legs position is at the top? So doesn't get the full length. Could we perhaps just take the top of the target and use that for distance?
 	//LOCAL landingHeight IS 0. //Additional distance above the surface
 	LOCAL targetHeightAdded IS FALSE.
 	
@@ -46,7 +46,7 @@
 	//Acceleration properties
 	LOCAL base_acceleration IS (-SHIP:AVAILABLETHRUST/SHIP:MASS)*0.90. //Makes estimates with 90% avaiable thrust, so it may increase throttle later if needed
 	LOCAL effective_acceleration IS base_acceleration + SHIP:BODY:MU/(altitude^2).
-	LOCAL LOCK stopDistance TO ((v_f^2 - v_i^2)/(2*effective_acceleration)) + shipHeight - 3. //5 ship height
+	LOCAL LOCK stopDistance TO ((v_f^2 - v_i^2)/(2*effective_acceleration)) + shipHeight. //5 ship height
 		
 	//Sets up the RCS thrusters
 	LOCAL rcsLimiter IS (SHIP:MASS/2.6).
@@ -143,9 +143,6 @@
 		PRINT("Ar : " + Ar).
 		PRINT("Max : " + max_acceleration).
 		PRINT("Ship height : " + shipHeight).
-		
-		//RUNPATH("basic_functions/modVelocityPlane_iterative.ks", V(0,0,0), planeNormalVector, rcsList:LENGTH).
-		//RUNPATH ("basic_functions/modPositionPlane_iterative.ks", _landObject, V(0,0,0), planeNormalVector).
 		
 		//If landing on a target, adds the targets height to the shipHeight once it is unpacked
 		IF(_landObject <> 0 AND _landObject:ISTYPE("Vessel") AND targetHeightAdded = FALSE AND _landObject:UNPACKED){

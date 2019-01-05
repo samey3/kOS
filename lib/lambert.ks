@@ -11,6 +11,52 @@
 @lazyglobal off.
 RUNONCEPATH("lib/processing.ks").
 
+	//Provides the Lambert result for directly intercepting a target (add distance)
+	FUNCTION getInterceptNode {
+		PARAMETER s1.
+		PARAMETER s2.
+		PARAMETER allowLob IS TRUE.
+		PARAMETER optArrival IS TRUE.
+		PARAMETER startTime IS TIME:SECONDS.
+		
+		LOCAL rv1 IS getECIVecs(s1:ORBIT).
+		LOCAL rv2 IS getECIVecs(s2:ORBIT).
+
+		//RETURN lambert(rv1, rv2, s1:BODY:MU, allowLob, optArrival, startTime).
+		RETURN lambert2(s1:ORBIT, s2:ORBIT, allowLob, optArrival, startTime).
+	}
+	
+	//Provides the lambert result for intercepting a target orbit
+	FUNCTION getTransferNode {
+		PARAMETER _semimajoraxis.
+		PARAMETER _eccentricity.
+		PARAMETER _inclination.
+		PARAMETER _longitudeofascendingnode.
+		PARAMETER _argumentofperiapsis.
+		PARAMETER _trueanomaly.
+
+		PARAMETER allowLob IS TRUE.
+		PARAMETER optArrival IS TRUE.
+		PARAMETER startTime IS TIME:SECONDS.
+		
+		
+		//Create the lexicon to hold the desired orbit's parameters
+		LOCAL targetOrbit IS LEXICON().
+			SET targetOrbit["mu"] TO SHIP:BODY:MU.	
+			SET targetOrbit["semimajoraxis"] TO _semimajoraxis.	
+			SET targetOrbit["eccentricity"] TO _eccentricity.	
+			SET targetOrbit["inclination"] TO _inclination.	
+			SET targetOrbit["longitudeofascendingnode"] TO _longitudeofascendingnode.	
+			SET targetOrbit["argumentofperiapsis"] TO _argumentofperiapsis.	
+			SET targetOrbit["trueanomaly"] TO _trueanomaly.		
+			
+		//Get the ECI vecs for the orbits
+		LOCAL rv1 IS getECIVecs(SHIP:ORBIT).
+		LOCAL rv2 IS getECIVecs(targetOrbit).
+
+		RETURN lambert(rv1, rv2, targetOrbit["mu"], allowLob, optArrival, startTime).
+	}
+
 //#######################################################################
 //#																		#
 //# lib: lambertoptimize												#
@@ -19,28 +65,67 @@ RUNONCEPATH("lib/processing.ks").
 
 	//Seems s1 and s2 are vessels/bodies
 	function lambert {
+	  //parameter s1.
+	  //parameter s2.
+	  parameter rv1.
+	  parameter rv2.
+	  parameter mu IS SHIP:BODY:MU.
+	  parameter allowLob is true.
+	  parameter optArrival is true.
+	  parameter startTime is time:seconds.
+  
+	  LOCAL kep1 IS eciVecsToKepElem(mu, rv1[0], rv1[1]).
+	  LOCAL kep2 IS eciVecsToKepElem(mu, rv2[0], rv2[1]). 
+	  
+	  LOCAL period1 IS 2*CONSTANT():PI*SQRT((kep1[0]^3)/mu).
+	  LOCAL period2 IS 2*CONSTANT():PI*SQRT((kep2[0]^3)/mu).
+	    
+	  local synodicPeriod to 1 / abs((1 / period1) - (1 / period2)).
+		SET synodicPeriod TO 2*ETA:PERIAPSIS.
+	  local dtMin to 0.
+	  local dtMax to max(period1, period2).
+
+	  //local rv1 to getECIVecs(s1:orbit).
+	  //local rv2 to getECIVecs(s2:orbit).
+	  
+	  //local res to lambertOptimizeBounded(s1, s2, startTime, startTime + synodicPeriod, dtMin, dtMax, allowLob, optArrival).
+	  local res to lambertOptimizeBounded(rv1, rv2, mu, startTime, startTime + synodicPeriod, dtMin, dtMax, allowLob, optArrival).
+	  
+	  return res.
+	}
+	
+	//Seems s1 and s2 are vessels/bodies
+	function lambert2 {
 	  parameter s1.
 	  parameter s2.
 	  parameter allowLob is true.
 	  parameter optArrival is true.
 	  parameter startTime is time:seconds.
-
-	  local synodicPeriod to 1 / abs((1 / s1:orbit:period) - (1 / s2:orbit:period)).
+	    
+	  local synodicPeriod to 1 / abs((1 / s1:period) - (1 / s2:period)).
 	  local dtMin to 0.
-	  local dtMax to max(s1:orbit:period, s2:orbit:period).
+	  local dtMax to max(s1:period, s2:period).
 
-	  local res to lambertOptimizeBounded(s1, s2, startTime, startTime + synodicPeriod, dtMin, dtMax, allowLob, optArrival).
+	  local rv1 to getECIVecs(s1).
+	  local rv2 to getECIVecs(s2).
+	  
+	  //local res to lambertOptimizeBounded(s1, s2, startTime, startTime + synodicPeriod, dtMin, dtMax, allowLob, optArrival).
+	  local res to lambertOptimizeBounded(rv1, rv2, s1:body:mu, startTime, startTime + synodicPeriod, dtMin, dtMax, allowLob, optArrival).
 	  
 	  return res.
 	}
 
 	function lambertOptimizeBounded {
-	  parameter s1.
-	  parameter s2.
+	  //parameter s1.
+	  //parameter s2.
+	  parameter rv1.
+	  parameter rv2.
+	  PARAMETER mu.
 	  parameter tMin.
 	  parameter tMax.
 	  parameter dtMin is 0.
-	  parameter dtMax is max(s1:orbit:period, s2:orbit:period).
+	  //parameter dtMax is max(s1:orbit:period, s2:orbit:period).
+	  parameter dtMax is max(2*CONSTANT():PI*SQRT(((eciVecsToKepElem(mu, rv1[0], rv1[1]))[0]^3)/mu), 2*CONSTANT():PI*SQRT(((eciVecsToKepElem(mu, rv2[0], rv2[1]))[0]^3)/mu)).
 	  parameter allowLob is true.
 	  parameter optArrival is true.
 
@@ -63,14 +148,14 @@ RUNONCEPATH("lib/processing.ks").
 	  set dtMin to max(0, dtMin).
 	  set dtMax to max(dtMin + 1e-8, dtMax).
 
-	  local b to s1:body.
-	  if s2:body <> b {
-		print "bodies must be the same".
-		exit.
-	  }
+	  //local b to s1:body.
+	  //if s2:body <> b {
+	//	print "bodies must be the same".
+	//	exit.
+	  //}
 
-	  local rv1 to getECIVecs(s1:orbit).
-	  local rv2 to getECIVecs(s2:orbit).
+	  //local rv1 to getECIVecs(s1:orbit).
+	  //local rv2 to getECIVecs(s2:orbit).
 
 	  local res to lexicon().
 
@@ -85,7 +170,7 @@ RUNONCEPATH("lib/processing.ks").
 		set tStep to max(MIN_STEP_T, (tMax - tMin) / 10000).
 		set dtStep to max(MIN_STEP_DT, (dtMax - dtMin) / 500).
 
-		set res to solveLambert(b:mu,
+		set res to solveLambert(mu, //b:mu,
 								rv1[0], rv1[1],
 								rv2[0], rv2[1],
 								tMin, tMax, tStep,
@@ -104,7 +189,7 @@ RUNONCEPATH("lib/processing.ks").
 
 	  local calcEndTime to time:seconds.
 	  print "Calc end time: " + calcEndTime + " (total time: " + (calcEndTime - calcStartTime) + ")".
-	  print "answer from mainframe: " + res["t"].
+	  print "answer from processing: " + res["t"].
 
 	  set res["t"] to res["t"] + calcStartTime.
 	  print "returning " + res["t"] + " (" + (res["t"] - time:seconds) + " from now)".
@@ -129,7 +214,7 @@ RUNONCEPATH("lib/processing.ks").
 	  local h to vcrs(r, v).
 	  local eVec to vcrs(v, h) / mu - r:normalized.
 	  local e to eVec:mag.
-
+	  
 	  // Inclination
 	  local i to arccos(h:z / h:mag).
 
@@ -204,13 +289,25 @@ RUNONCEPATH("lib/processing.ks").
 	  return list(V(x, y, z), V(vx, vy, vz)).
 	}
 
-	function getECIVecs
+	FUNCTION getECIVecs
 	{
-		parameter p_obt.
-		return kepElemToEciVecs(p_obt:body:mu, list(p_obt:semimajoraxis,
-													p_obt:eccentricity,
-													p_obt:inclination,
-													p_obt:longitudeofascendingnode,
-													p_obt:argumentofperiapsis,
-													p_obt:trueanomaly)).
+		//Either an orbit structure, or a lexicon
+		PARAMETER p_obt.
+		
+		IF(p_obt:ISTYPE("Orbit")){
+			RETURN kepElemToEciVecs(p_obt:body:mu, LIST(p_obt:semimajoraxis,
+									p_obt:eccentricity,
+									p_obt:inclination,
+									p_obt:longitudeofascendingnode,
+									p_obt:argumentofperiapsis,
+									p_obt:trueanomaly)).
+		}
+		ELSE {
+			RETURN kepElemToEciVecs(p_obt["mu"], LIST(p_obt["semimajoraxis"],
+									p_obt["eccentricity"],
+									p_obt["inclination"],
+									p_obt["longitudeofascendingnode"],
+									p_obt["argumentofperiapsis"],
+									p_obt["trueanomaly"])).
+		}
 	}

@@ -57,6 +57,14 @@ FUNCTION setDrills {
 	
 }
 
+ON(CORE:MESSAGES:LENGTH){
+	IF(CORE:MESSAGES:EMPTY() = FALSE){
+		UNTIL(CORE:MESSAGES:EMPTY()){
+			PRINT("Received message : " + CORE:MESSAGES:POP():CONTENT).
+		}
+	}
+	RETURN TRUE.
+}
 
 
 FUNCTION setRCSLimits {
@@ -69,6 +77,9 @@ FUNCTION autoStage {
 	//Stages when there is no fuel left in the stage
 	//Use an ON/WHEN
 }
+
+
+
 
 
 

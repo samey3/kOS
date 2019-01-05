@@ -49,6 +49,8 @@
 		ELSE {
 			SET _coordinates TO res.
 		}
+		//PRINT(res).
+		//wait 3.
 	
 	//Impact prediction variables	
 	LOCAL timeToImpact IS 0.

@@ -1,0 +1,50 @@
+Mission builder itself can be called with an entity and action.
+Will allow per-mission scripts, e.g. dock with some entity and a mission is generated.
+The docking is done, control returned to mission-script, and some specific code like undocking done.
+Then, a new mission can be built such as landing on a moon, and it is generated.
+
+builder script:
+-vessel/body list
+-actions list (different based on selected entity type)
+ -> E.g. landing opens selection windows
+
+RUNSCRIPT(path + scriptName, params...)
+
+
+
+
+
+TOP LEVEL (Basic, global parameters only)
+How to reference vessels via string?
+------------
+Land(Location)
+Rendezvous(max refinement; if solar orbit, 1) -- does refineOrbit and then matches velocity
+Dock -- (^May call rendezvous?) doesn't actually contain docking code, but calls the actual docking script, calls rendezvous if needed)
+Set Orbit(parameters)
+Transfer(body)
+Launch(params?)
+
+
+
+SECOND LEVEL (Nearly identical, but its probably okay like this)
+------------
+refineOrbit (Pass me parameters and I'll match it)
+rendezvous (#refinements, Call refineOrbit a few times)
+dock (Generic docking)
+land
+launch
+
+
+
+THIRD LEVEL
+-----------
+vecBurn
+nodeExecute
+moveToPoint
+Etc.
+
+
+
+LIB LEVEL
+---------
+Libs
