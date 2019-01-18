@@ -1,4 +1,4 @@
-RUNONCEPATH("lib/processing/processRequest.ks").
+RUNONCEPATH("RESTRUCTURE V3/lib/processing/processRequest.ks").
 
 FUNCTION request{
 

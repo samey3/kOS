@@ -1,0 +1,5 @@
+When a craft is launched using the missionBuilder, it checks to see if it has a ship_config.
+If it does, runs it. If it doesn't, uses the generic one.
+
+Basically sets up parameters for the ship.
+Could also return a lexicon of values used in other scripts?

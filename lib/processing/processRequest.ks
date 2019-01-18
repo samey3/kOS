@@ -1,7 +1,7 @@
 
-LOCAL requestPath IS "lib/processing/requests/job_request.kr".
-LOCAL resultPath IS  "lib/processing/requests/job_result.kr".
-LOCAL completePath IS  "lib/processing/requests/job_complete.kr".
+LOCAL requestPath IS "RESTRUCTURE V3/lib/processing/requests/job_request.kr".
+LOCAL resultPath IS  "RESTRUCTURE V3/lib/processing/requests/job_result.kr".
+LOCAL completePath IS  "RESTRUCTURE V3/lib/processing/requests/job_complete.kr".
 
 
 //Lambert solver and related files obtained/interpreted from

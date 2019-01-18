@@ -9,7 +9,7 @@
 
 
 @lazyglobal off.
-RUNONCEPATH("lib/processing.ks").
+RUNONCEPATH("RESTRUCTURE V3/lib/processing.ks").
 
 	//Provides the Lambert result for directly intercepting a target (add distance)
 	FUNCTION getInterceptNode {
@@ -28,33 +28,35 @@ RUNONCEPATH("lib/processing.ks").
 	
 	//Provides the lambert result for intercepting a target orbit
 	FUNCTION getTransferNode {
-		PARAMETER _semimajoraxis.
-		PARAMETER _eccentricity.
-		PARAMETER _inclination.
-		PARAMETER _longitudeofascendingnode.
-		PARAMETER _argumentofperiapsis.
-		PARAMETER _trueanomaly.
-
+		//PARAMETER _semimajoraxis.
+		//PARAMETER _eccentricity.
+		//PARAMETER _inclination.
+		//PARAMETER _longitudeofascendingnode.
+		//PARAMETER _argumentofperiapsis.
+		//PARAMETER _trueanomaly.
+		PARAMETER s1.
+		PARAMETER _targetOrbit.
+		
 		PARAMETER allowLob IS TRUE.
 		PARAMETER optArrival IS TRUE.
 		PARAMETER startTime IS TIME:SECONDS.
 		
 		
 		//Create the lexicon to hold the desired orbit's parameters
-		LOCAL targetOrbit IS LEXICON().
-			SET targetOrbit["mu"] TO SHIP:BODY:MU.	
-			SET targetOrbit["semimajoraxis"] TO _semimajoraxis.	
-			SET targetOrbit["eccentricity"] TO _eccentricity.	
-			SET targetOrbit["inclination"] TO _inclination.	
-			SET targetOrbit["longitudeofascendingnode"] TO _longitudeofascendingnode.	
-			SET targetOrbit["argumentofperiapsis"] TO _argumentofperiapsis.	
-			SET targetOrbit["trueanomaly"] TO _trueanomaly.		
+		//PARAMETER _targetOrbit IS LEXICON().
+			SET _targetOrbit["mu"] TO s1:BODY:MU.	
+			//SET targetOrbit["semimajoraxis"] TO _semimajoraxis.	
+			//SET targetOrbit["eccentricity"] TO _eccentricity.	
+			//SET targetOrbit["inclination"] TO _inclination.	
+			//SET targetOrbit["longitudeofascendingnode"] TO _longitudeofascendingnode.	
+			//SET targetOrbit["argumentofperiapsis"] TO _argumentofperiapsis.	
+			SET _targetOrbit["trueanomaly"] TO (startTime/s1:ORBIT:PERIOD)*360.		
 			
 		//Get the ECI vecs for the orbits
-		LOCAL rv1 IS getECIVecs(SHIP:ORBIT).
-		LOCAL rv2 IS getECIVecs(targetOrbit).
+		LOCAL rv1 IS getECIVecs(s1:ORBIT).
+		LOCAL rv2 IS getECIVecs(_targetOrbit).
 
-		RETURN lambert(rv1, rv2, targetOrbit["mu"], allowLob, optArrival, startTime).
+		RETURN lambert(rv1, rv2, _targetOrbit["mu"], allowLob, optArrival, startTime).
 	}
 
 //#######################################################################

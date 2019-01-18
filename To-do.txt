@@ -1,0 +1,16 @@
+Ensure data folder correctly moved to top level, and move ship configs into it.
+
+Continue restructure of the 'mission operations' to ensure consistency in the commenting.
+ - Either remove circularManeuver.ks, or find a better conforming solution to keep the files organized.
+
+Create the 'ground operations' builder and move travelling, path-finding operations to it.
+
+Ensure everything is working correctly after the recent rename/archiving.
+
+Continue cleaning/reorganizing of library files.
+
+Dealing with KOS's extremely low number of computations per-second with regards to atmospheric prediction:
+ - May be able to store data on body's atmospheres at incrementing altitudes and load it beforehand.
+ - This may allow for proper and accurate predictions in-atmosphere without having the bottleneck.
+
+Either perform a cleanup of the lambert solver/optimizer files, or write your own version that will be more compatible.

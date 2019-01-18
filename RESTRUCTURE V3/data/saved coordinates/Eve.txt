@@ -1,6 +1,0 @@
-{
-    "items": [
-        
-    ],
-    "$type": "kOS.Safe.Encapsulation.ListValue"
-}

@@ -1,0 +1,1 @@
+Move all this getAscendingTime and other stuff to a lib.

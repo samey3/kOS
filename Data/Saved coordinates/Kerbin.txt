@@ -1,7 +1,0 @@
-{
-    "items": [
-        "Launch pad,-0.0972078366335618,-74.5576783933035",
-        "Island runway,-1.5409,-71.9099"
-    ],
-    "$type": "kOS.Safe.Encapsulation.ListValue"
-}

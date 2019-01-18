@@ -1,0 +1,6 @@
+{
+    "items": [
+        "Mun Arch,2.4633,81.531"
+    ],
+    "$type": "kOS.Safe.Encapsulation.ListValue"
+}

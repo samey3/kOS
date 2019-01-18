@@ -1,0 +1,33 @@
+Executing: MiniAVC - 1.0.3.2
+Assembly: D:\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program\GameData\LunaMultiplayer\Plugins\MiniAVC.dll
+
+[Log 19:46:38.8288644]: Starter was created.
+[Log 19:46:43.4582777]: D:\Program Files (x86)\Steam\steamapps\common\Kerbal Space Program\GameData\LunaMultiplayer\Plugins\LunaMultiplayer.version
+	NAME: Luna Multiplayer
+	URL: http://ksp-avc.cybutek.net/version.php?id=555
+	DOWNLOAD: https://github.com/LunaMultiplayer/LunaMultiplayer/releases
+	GITHUB: NULL
+	VERSION: 0.7.41
+	KSP_VERSION: 1.4.3
+	KSP_VERSION_MIN: 1.4
+	KSP_VERSION_MAX: 1.4.9
+	CompatibleKspVersion: False
+	CompatibleKspVersionMin: True
+	CompatibleKspVersionMax: True
+	CompatibleGitHubVersion: True
+[Log 19:46:43.4592775]: http://ksp-avc.cybutek.net/version.php?id=555
+	NAME: Luna Multiplayer
+	URL: http://ksp-avc.cybutek.net/version.php?id=555
+	DOWNLOAD: https://github.com/LunaMultiplayer/LunaMultiplayer/releases
+	GITHUB: NULL
+	VERSION: 0.8.42
+	KSP_VERSION: 1.4.3
+	KSP_VERSION_MIN: 1.4.3
+	KSP_VERSION_MAX: 1.4.3
+	CompatibleKspVersion: False
+	CompatibleKspVersionMin: True
+	CompatibleKspVersionMax: False
+	CompatibleGitHubVersion: True
+	UpdateAvailable: False
+
+[Log 19:46:44.2268349]: Starter was destroyed.

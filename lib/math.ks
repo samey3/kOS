@@ -22,6 +22,12 @@ FUNCTION sign {
 	RETURN 0.
 }
 
+FUNCTION percentDifference {
+	PARAMETER _A.
+	PARAMETER _B.
+	RETURN 2*ABS(_A - _B)/(_A + _B).
+}
+
 
 
 //Vectors

@@ -1,0 +1,2 @@
+This section will have similar behaviour to the mission builder, where the the various
+segments required to complete an overall task will be chained together.

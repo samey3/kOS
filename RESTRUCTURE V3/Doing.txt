@@ -1,8 +1,0 @@
-In libs, improve shipControl.
-Make it find the ACTUAL PROPER heights, and make sure it returns values easily usable by any script.
-
-Check through all scripts, make sure they use the restructured libs.
-
-
-
-http://ksp.deringenieur.net/

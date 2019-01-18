@@ -106,7 +106,7 @@ FUNCTION getImpactCoords{
 		IF(SHIP:BODY:ATM:EXISTS AND ADDONS:TR:HASIMPACT){
 			RETURN ADDONS:TR:IMPACTPOS.
 		}
-		
+
 		
 	//--------------------------------------------------------------------------\
 	//								Variables					   				|

@@ -1,1 +1,0 @@
-Draw vectors from CPUs to see if your ship height things are working correctly.
