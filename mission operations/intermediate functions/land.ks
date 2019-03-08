@@ -86,7 +86,7 @@
 			IF(SHIP:BODY:ATM:EXISTS AND SHIP:BODY:ATM:SEALEVELPRESSURE >= 0.3){
 				SET targCoords TO LATLNG(targCoords:LAT, targCoords:LNG + 13).
 			}
-		
+			
 			//----------------------------------------------------\
 			//Iterate the latitude--------------------------------|
 				LOCAL valuePasses IS 0.
@@ -229,7 +229,7 @@
 				}
 				ELSE{
 					//Should we make it wait until a specific time for this?
-					RUNPATH("basic_functions/modTrajectory.ks", _coordinates, 0, 20).
+					RUNPATH("mission operations/_to_remove/modTrajectory.ks", _coordinates, 0, 20).
 					
 					//Wait until burn
 					UNTIL (horizontalDistance <= (0.85*stopDistance)){		

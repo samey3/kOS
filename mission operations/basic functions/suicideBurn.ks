@@ -130,7 +130,7 @@
 	LOCK thrustPercent TO Ar/max_acceleration.
 	
 	LOCK THROTTLE TO thrustPercent.
-	IF(landingCoordinates <> 0 AND projectToPlane((landingCoordinates:POSITION - SHIP:POSITION), planeNormalVector):MAG < 200){
+	IF((landingCoordinates <> 0 AND projectToPlane((landingCoordinates:POSITION - SHIP:POSITION), planeNormalVector):MAG < 200) AND (SHIP:BODY:ATM:EXISTS AND SHIP:BODY:ATM:SEALEVELPRESSURE >= 0.3)){
 		LOCK STEERING TO (50*(-ADDONS:TR:PLANNEDVECTOR:NORMALIZED) + SQRT(impactDif:MAG)*impactDif:NORMALIZED):DIRECTION.
 	}
 	ELSE {
@@ -140,7 +140,7 @@
 	
 	
 	GEAR ON.
-	UNTIL (v_i < 0.5){
+	UNTIL (v_i < 0.5 OR SHIP:STATUS = "LANDED" OR SHIP:STATUS = "SPLASHED"){
 		CLEARSCREEN.
 		PRINT("v_i : " + v_i).
 		PRINT("Ar : " + Ar).
@@ -159,6 +159,7 @@
 		IF(V_i < 5){
 			LOCK STEERING TO SHIP:FACING.
 		}
+		
 	}
 	LOCK THROTTLE TO 0.
 	LOCK STEERING TO (SHIP:UP).

@@ -2,6 +2,8 @@
 //Starting with a circular orbit, checks whether _radius is smaller or greater than the current radius. Sets the new apoapsis or periapsis.
 //Does this at a given time.
 
+//REMOVE THIS SCRIPT ALREADY
+
 	CLEARSCREEN.
 	
 //--------------------------------------------------------------------------\
@@ -13,6 +15,13 @@
 	PARAMETER _timeToBurn IS 0.
 	PARAMETER _inclination IS 0.
 	PARAMETER _precise IS FALSE.
+	
+//--------------------------------------------------------------------------\
+//								 Imports					   				|
+//--------------------------------------------------------------------------/
+
+
+	RUNONCEPATH("lib/orbitProperties.ks").
 	
 	
 //---------------------------------------------------------------------------------\
@@ -56,7 +65,10 @@
 		LOCAL req_periMag IS SQRT(((1 + req_eccentricity) / (1 - req_eccentricity)) * (SHIP:BODY:MU / req_SMA)).	
 		LOCAL f_posVec IS (POSITIONAT(SHIP, TIME:SECONDS + _timeToBurn) - POSITIONAT(SHIP:BODY, TIME:SECONDS + _timeToBurn)).
 		LOCAL diffVector IS (ANGLEAXIS(_inclination, f_posVec)*(VELOCITYAT(SHIP,TIME:SECONDS + _timeToBurn):ORBIT:NORMALIZED*req_periMag) - VELOCITYAT(SHIP,TIME:SECONDS + _timeToBurn):ORBIT). //Angled req mag - cur mag		
-		RUNPATH ("basic_functions/nodeBurn.ks", _timeToBurn, diffVector:MAG, diffVector).
+		//RUNPATH ("basic_functions/nodeBurn.ks", _timeToBurn, diffVector:MAG, diffVector).
+		
+		LOCAL resNode IS nodeFromVector(TIME:SECONDS + _timeToBurn, diffVector).
+		RUNPATH("mission operations/basic functions/executeNode.ks", resNode).
 
 		//IF(_precise){
 		//RUNPATH ("basic_functions/modVelocity.ks", SHIP:BODY, VCRS(VCRS(SHIP:POSITION - SHIP:BODY:POSITION, SHIP:VELOCITY:ORBIT), SHIP:POSITION - SHIP:BODY:POSITION):NORMALIZED*req_periMag, 0, 2). }
@@ -65,7 +77,10 @@
 		LOCAL req_ApoMag IS SQRT(((1 - req_eccentricity) / (1 + req_eccentricity)) * (SHIP:BODY:MU / req_SMA)).	
 		LOCAL f_posVec IS -(POSITIONAT(SHIP, TIME:SECONDS + _timeToBurn) - SHIP:BODY:POSITION).
 		LOCAL diffVector IS (ANGLEAXIS(_inclination, f_posVec)*(VELOCITYAT(SHIP,TIME:SECONDS + _timeToBurn):ORBIT:NORMALIZED*req_ApoMag) - VELOCITYAT(SHIP,TIME:SECONDS + _timeToBurn):ORBIT). //Angled req mag - cur mag			
-		RUNPATH ("basic_functions/nodeBurn.ks", _timeToBurn, diffVector:MAG, diffVector).
+		//RUNPATH ("basic_functions/nodeBurn.ks", _timeToBurn, diffVector:MAG, diffVector).
+		
+		LOCAL resNode IS nodeFromVector(TIME:SECONDS + _timeToBurn, diffVector).
+		RUNPATH("mission operations/basic functions/executeNode.ks", resNode).
 		
 		//IF(_precise){
 		//RUNPATH ("basic_functions/modVelocity.ks", SHIP:BODY, VCRS(VCRS(SHIP:POSITION - SHIP:BODY:POSITION, SHIP:VELOCITY:ORBIT), SHIP:POSITION - SHIP:BODY:POSITION):NORMALIZED*req_apoMag, 0, 2). }

@@ -9,7 +9,7 @@
 
 
 @lazyglobal off.
-RUNONCEPATH("RESTRUCTURE V3/lib/processing.ks").
+RUNONCEPATH("lib/processing.ks").
 
 	//Provides the Lambert result for directly intercepting a target (add distance)
 	FUNCTION getInterceptNode {

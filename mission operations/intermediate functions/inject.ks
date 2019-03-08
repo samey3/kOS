@@ -82,7 +82,7 @@
 		LOCAL r_speed IS 0.80*SQRT(2*SHIP:BODY:MU/(SHIP:BODY:RADIUS + SHIP:ORBIT:PERIAPSIS)). //Sets to 80% of the escape velocity
 		SET r_velocity TO r_speed*VELOCITYAT(SHIP, TIME:SECONDS + ETA:PERIAPSIS):ORBIT:NORMALIZED.
 	
-		SET resNode TO nodeFromDesiredVector(maneuverTime, r_velocity).
+		SET resNode TO nodeFromDesiredVector(TIME:SECONDS + ETA:PERIAPSIS, r_velocity).
 		RUNPATH("mission operations/basic functions/executeNode.ks", resNode).
 	
 	

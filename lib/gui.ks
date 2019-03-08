@@ -212,7 +212,7 @@
 				SET savedButton:ONCLICK TO {
 					landBox:CLEAR().
 					IF(chosenEntity <> 0){
-						LOCAL path IS ("RESTRUCTURE V3/data/saved coordinates/" + chosenEntity:NAME + ".txt").
+						LOCAL path IS ("mission operations/data/saved coordinates/" + chosenEntity:NAME + ".txt").
 						IF(NOT VOLUME(0):EXISTS(path)){ WRITEJSON(LIST(), path). } //If the file does not exist, create it
 						
 						SET coordinateList TO READJSON(path).

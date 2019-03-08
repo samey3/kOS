@@ -1,5 +1,5 @@
 @lazyglobal OFF.
-RUNONCEPATH("0:/RESTRUCTURE V3/lib/shipControl.ks").
+RUNONCEPATH("0:/lib/shipControl.ks").
 
 //Enable the automatic ship systems.
 adaptiveLighting(TRUE).

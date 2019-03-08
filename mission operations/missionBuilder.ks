@@ -190,7 +190,7 @@
 		//----------------------------------------------------\
 		//Perform the final operation-------------------------|
 			IF(_action = "land"){
-				//RUNPATH("mission operations/main functions/land.ks", _landCoordinates). //May be geoposition or vessel
+				RUNPATH("mission operations/main functions/land.ks", _landCoordinates). //May be geoposition or vessel
 			}
 			ELSE IF(_action = "rendezvous"){
 				RUNPATH("mission operations/main functions/rendezvous.ks", _entity).

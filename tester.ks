@@ -22,6 +22,7 @@ LOCAL orbitLex IS LEXICON().
 
 
 //RUNPATH("mission operations/missionBuilder.ks", SHIP:BODY, "land", 0, 0). 
+//RUNPATH("mission operations/missionBuilder.ks", SHIP:BODY, "land", LATLNG(20.5829, -146.5116), 0). 
 //RUNPATH("mission operations/missionBuilder.ks", SHIP:BODY, "orbit", 0, orbitLex). 
 RUNPATH("mission operations/missionBuilder.ks"). //No parameters given, serves selection-GUI instead
 

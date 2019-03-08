@@ -154,7 +154,7 @@
 		PARAMETER _craft.
 		
 		//Import the math library
-		RUNONCEPATH("RESTRUCTURE V3/lib/math.ks").
+		RUNONCEPATH("lib/math.ks").
 		
 		//Part distances
 		LOCAL biggestUpper IS 0.

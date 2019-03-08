@@ -1,7 +1,7 @@
 //Loads the configuration file for a vessel and applies it
 //Creates a new one if one does not already exist
 FUNCTION configureVessel {
-	LOCAL configPath IS ("ship_configs/" + SHIP:NAME + ".ksc").
+	LOCAL configPath IS ("ship configs/" + SHIP:NAME + ".ksc").
 
 	//If does not exist, creates config file with ship name
 	IF(VOLUME(0):EXISTS(configPath) = FALSE){
