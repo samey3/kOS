@@ -6,7 +6,8 @@
 //--------------------------------------------------------------------------/
 
 
-	PARAMETER _node.
+	PARAMETER hostObj.
+	PARAMETER toVector.	
 	PARAMETER timeLimit IS 0.
 	
 	
@@ -24,8 +25,9 @@
 		LOCAL LOCK Za TO SHIP:FACING:STARVECTOR.
 
 		//To desired velocity and relative velocity vectors (custom axis)
-		LOCAL LOCK burnVec TO V(VDOT(_node:BURNVECTOR,Xa),VDOT(_node:BURNVECTOR,Ya),VDOT(_node:BURNVECTOR,Za)).
-		LOCAL LOCK differenceVec TO (burnVec).	
+		SET toVector TO V(VDOT(toVector,Xa),VDOT(toVector,Ya),VDOT(toVector,Za)).
+		LOCAL LOCK c_relVel TO V(VDOT((SHIP:VELOCITY:ORBIT - hostObj:VELOCITY:ORBIT),Xa),VDOT((SHIP:VELOCITY:ORBIT - hostObj:VELOCITY:ORBIT),Ya),VDOT((SHIP:VELOCITY:ORBIT - hostObj:VELOCITY:ORBIT),Za)).
+		LOCAL LOCK differenceVec TO (toVector - c_relVel).	
 
 		
 	//--------------------------------------\
@@ -129,6 +131,7 @@
 	UNLOCK Xa.
 	UNLOCK Ya.
 	UNLOCK Za.
+	UNLOCK c_relVel.
 	UNLOCK differenceVec.	
 	UNLOCK thrustPercent.
 	UNLOCK STEERING.

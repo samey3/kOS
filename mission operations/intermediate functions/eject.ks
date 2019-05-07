@@ -36,5 +36,5 @@
 		
 	//Warps to the ejection
 		IF(SHIP:ORBIT:HASNEXTPATCH){
-			warpTime(SHIP:ORBIT:NEXTPATCHETA + 30).
+			warpTime(TIME:SECONDS + SHIP:ORBIT:NEXTPATCHETA + 30).
 		}

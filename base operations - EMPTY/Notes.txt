@@ -1,0 +1,71 @@
+This one might be a mess.
+This one refers to mobile set-up bases, not KSC or anything (that could be controlled by a master script).
+
+Request new base component.
+Move base component. -> Makes call to owned vehicles.
+Manage base property.
+
+
+
+
+
+
+
+How a base is started
+ -> When command module landed and the base-manager boot script is run (On base land, script is moved to boot and run for first time),
+	checks in data area for bases by vessel/base name (or id?), which contains several data areas.
+ -> Data such as: array of ground-mover vehicles, air-mover vehicles, buildings, supplies landing area, base coordinates (usually command module)
+ -> Master builder example: mission ops to land, create base
+
+
+Base.lib
+->Initialize/create base (creates file, adds the boot script)
+->Load base data
+->addVehicle(vehicle, type)
+->moveBuilding/component(vessel, newLocation) (can move other vehicles I suppose)
+	* Grabs the first vehicle appropriate for the job
+	* Calls vehicle operations builder, strings together pickup, move, drop-off
+->requestComponent (if valid naming scheme, go back to ksc, and load up the payload and launch it (FAR IN FUTURE)
+
+
+
+Does this really need an operations folder? How else to properly do this?
+
+
+
+
+
+
+
+
+
+
+
+Base ops also needs to be able to call mission ops (or master builder) and give coordinates for supplies to land.
+
+2 parts:
+Base boot script
+Base lib (for support/simplify)
+
+Boot script monitors things
+-'resource tank component' not full/under some percent, pick a miner to go mine
+-
+
+
+
+(#1 TO IMPLEMENT)
+Ground-vehicle operations:
+-pickUp(vessel)
+-dropOff(location)
+-move(vessel, location)
+* both make use of a 'transfer script', basically just driving to a location
+Actions=pickUpComponent,dropOffComponent,moveComponent,move(calls just the basic move)
+*all of the component scripts check if the vehicle has the proper equipment first
+*else regular vehicles may only use the move script
+*can drop off path-finding stuff in here
+
+(#2 TO IMPLEMENT?)
+Air-vertical-vehicle operations:
+*same as ground-vehicle but adapted for vertical moving vehicles
+
+~~Regular air vehicle operations will also have a similar set of actions

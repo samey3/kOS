@@ -1,0 +1,7 @@
+Perhaps have another parameter in the ship configuration. This would specifiy the type of landing
+the vessel uses. When it goes to land, checks the value, and selects from the appropriate landing
+script.
+
+It could then call suicideBurn.ks at the end of it (in starship case) and land.
+
+Could be the same idea for launch scripts, which are likely to be more varied.

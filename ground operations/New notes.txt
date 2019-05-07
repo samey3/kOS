@@ -1,0 +1,42 @@
+PARAMETERS FOR BUILDER
+-finalLocation (where the vehicle will move for the end of the script)
+-vesselForPickup
+-dropoffLocation (Have to stop a bit short so its dropped off in right spot)
+
+
+ACTIONS
+-move (this subscript takes two parameters, one is location, second is distance to stop from the location (default 0), e.g. move 100m nearby then run pickup script)
+	* This one uses path-finding to get to the location. Calls intermediate-level move.
+-pickUp (this script does not use path-finding, treats like flat ground, and picks up the specified object) - calls intermediate level pickUp
+-dropOff (no path-finding, drops off the object at a specific location (orientation of drop-off?)) - calls intermediate level dropOff
+-moveComponent (Moves to, pickup, move, dropOff, move if final destination set) - calls intermediate-level pickUp, move, dropOff
+
+move(coordinates, standoffDistance)
+pickUp(vessel)
+dropOff(coordinates)		(Orientation?)
+moveComponent(vessel, coordinates, (optional)coordinates)
+
+
+BUILDING
+RUNSCRIPT("build", "move", 0, 0, LATLNG(...)). //Ignores vesselPickup, dropOff location
+RUNSCRIPT("build", "pickup", TARGET, 0, 0). //Ignores dropOff location, finalLocation
+RUNSCRIPT("build", "dropoff", 0, LATLNG(...), 0). //Ignores dropOff location, finalLocation
+RUNSCRIPT("build", "moveComponent", TARGET, LATLNG(...), LATLNG(...optional...)). //Ignores dropOff location, finalLocation
+
+
+BUILD SCRIPT
+Gui select if none...
+
+IF pickup (vessel)
+	move (vessel:loc)
+	pickup (vessel)
+IF dropoff (drop)
+	move (dropLoc)
+	dropoff (dropLoc)
+IF moveComponent (vessel, drop)
+	move (vessel:loc)
+	pickup (vessel)
+	move (dropLoc)
+	dropoff (dropLoc)
+
+move (final) (optional, if final declared)

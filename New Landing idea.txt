@@ -1,0 +1,2 @@
+If the lambert solver takes a position and time, we can modify time-bounding  bit (perhap not bounded but feed it a series of times?).
+Feed it a bunch of positions for target position and time to, and see if it can solve for a burn to intercept.

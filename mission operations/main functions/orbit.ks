@@ -15,8 +15,7 @@
 //--------------------------------------------------------------------------/
 
 
-	RUNPATH("mission operations/intermediate functions/refineOrbit.ks", _orbitLex, 10).
-	//Run enough times till orbital parameters are sufficiently met. The solution to deciding whether it is met enough can be used in rendezvous as well.
+	RUNPATH("mission operations/intermediate functions/setOrbit.ks", _orbitLex, FALSE, TRUE). //Don't match true anomaly, refine until acceptable
 	
 	
 	

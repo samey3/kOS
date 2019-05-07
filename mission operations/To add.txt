@@ -1,0 +1,2 @@
+Add a de-orbit function (go onto suborbital trajectory, but then end, let other stuff take over?)
+Or is this handled by the 'custom landing scripts'?

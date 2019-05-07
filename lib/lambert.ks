@@ -50,7 +50,7 @@ RUNONCEPATH("lib/processing.ks").
 			//SET targetOrbit["inclination"] TO _inclination.	
 			//SET targetOrbit["longitudeofascendingnode"] TO _longitudeofascendingnode.	
 			//SET targetOrbit["argumentofperiapsis"] TO _argumentofperiapsis.	
-			SET _targetOrbit["trueanomaly"] TO (startTime/s1:ORBIT:PERIOD)*360.		
+			SET _targetOrbit["trueanomaly"] TO (startTime/s1:ORBIT:PERIOD)*360. //This is irrelevant?		
 			
 		//Get the ECI vecs for the orbits
 		LOCAL rv1 IS getECIVecs(s1:ORBIT).
@@ -66,6 +66,7 @@ RUNONCEPATH("lib/processing.ks").
 //#######################################################################
 
 	//Seems s1 and s2 are vessels/bodies
+	//Used for getting transfer
 	function lambert {
 	  //parameter s1.
 	  //parameter s2.
@@ -85,7 +86,7 @@ RUNONCEPATH("lib/processing.ks").
 	  local synodicPeriod to 1 / abs((1 / period1) - (1 / period2)).
 		SET synodicPeriod TO 2*ETA:PERIAPSIS.
 	  local dtMin to 0.
-	  local dtMax to max(period1, period2).
+	  local dtMax to max(period1, period2). //Forcibly bound this, e.g. 3 years max? WRONG. This is travel time, must bound t inside the java app
 
 	  //local rv1 to getECIVecs(s1:orbit).
 	  //local rv2 to getECIVecs(s2:orbit).
@@ -97,6 +98,7 @@ RUNONCEPATH("lib/processing.ks").
 	}
 	
 	//Seems s1 and s2 are vessels/bodies
+	//Used for getting intercept
 	function lambert2 {
 	  parameter s1.
 	  parameter s2.

@@ -1,13 +1,18 @@
 	@lazyglobal OFF.
 	CLEARSCREEN.
 
+	//Unset steering
 	LOCK STEERING TO SHIP:FACING.
 	LOCK THROTTLE TO 0.
 	UNLOCK STEERING.
 	UNLOCK THROTTLE.
 	
+	//Unset SAS/RCS
 	SAS OFF.
 	RCS OFF.
+	
+	//Remove any maneuver nodes in the flight plan
+	FOR nodeEntry in ALLNODES { REMOVE nodeEntry. }  
 
 
 //--------------------------------------------------------------------------\
@@ -44,6 +49,12 @@
 			WAIT 3. REBOOT.
 		}
 	}
+	
+	IF(NOT(DEFINED STAGE_ID) OR NOT(DEFINED TRANSFER_COUNT)){
+		PRINT ("Mission settings not configured ( " + SCRIPTPATH():NAME + " ).").
+		PRINT ("Rebooting. . ."). 
+		WAIT 3. REBOOT.
+	}	
 
 	
 //--------------------------------------------------------------------------\
@@ -60,6 +71,10 @@
 		SET _orbitLex TO res["orbitparameters"].
 	}
 	
+	//If docking, holds the distance between the ship and entity when deciding if to rendezvous
+	LOCAL entityDistance IS 0.
+	LOCAL rendezvousDistance IS 1000.
+	
 	//Gets the entity bodies
 	LOCAL b1 IS SHIP:BODY.
 	LOCAL b2 IS 0.
@@ -73,28 +88,30 @@
 	LOCAL transfers IS STACK().
 	LOCAL lastCommon IS 0.
 	
-	//GLOBAL VARIABLE FOR STAGE TRACKING
-	//This value will be updated by the various sub scripts.
-	//On a change, sends a message with the new value to the systems manager CPU which handles staging.
-	DECLARE GLOBAL STAGE_ID TO "SETUP".
-
 	
 //--------------------------------------------------------------------------\
 //							Set up stage tracker			   				|
 //--------------------------------------------------------------------------/	
 	
 
-	//LOCAL systemsCore IS ((SHIP:PARTSTAGGED("systems manager"))[0]):GETMODULEBYINDEX(0).
-	ON(STAGE_ID){
-		//systemsCore:CONNECTION:SENDMESSAGE(STAGE_ID).
-		RETURN TRUE.
+	IF(SHIP:PARTSTAGGED("systems manager"):LENGTH <> 0){
+		LOCAL systemsCore IS ((SHIP:PARTSTAGGED("systems manager"))[0]):GETMODULEBYINDEX(0).
+		ON((STAGE_ID + "_" + TRANSFER_COUNT)){
+			LOCAL stageMessage IS (TRANSFER_COUNT + "_" + STAGE_ID).
+			systemsCore:CONNECTION:SENDMESSAGE(stageMessage).
+			PRINT("CHANGED : " + stageMessage).
+			WAIT 2.
+			RETURN TRUE.
+		}
 	}
-	
+
 
 //--------------------------------------------------------------------------\
 //								Program run					   				|
 //--------------------------------------------------------------------------/
 	
+	
+		SET STAGE_ID TO "SETUP".
 
 	//#######################################################################
 	//# 				First find all required transfers					#
@@ -152,8 +169,12 @@
 			PRINT("  |->Object : " + _entity).
 		}
 		ELSE IF(_action = "dock"){
-			PRINT("* Rendezvous").
-			PRINT("  |->Object : " + _entity).
+			SET entityDistance TO (SHIP:POSITION - _entity:POSITION):MAG.
+			//If distance > 1km, rendezvous
+			IF(entityDistance > rendezvousDistance){
+				PRINT("* Rendezvous").
+				PRINT("  |->Object : " + _entity).
+			}			
 			PRINT("* Dock").
 			PRINT("  |->Vessel : " + _entity).
 		}
@@ -183,7 +204,22 @@
 		//----------------------------------------------------\
 		//Execute any transfers-------------------------------|
 			UNTIL(transfers:EMPTY()){
-				RUNPATH("mission operations/main functions/transfer.ks", transfers:POP()). //transfers:PEEK()
+
+				//Get the next transfer
+				LOCAL nextTransfer IS transfers:POP().
+				LOCAL secondTransfer IS 0.
+				
+				//If there is another transfer 
+				IF (transfers:EMPTY() = FALSE AND transfers:PEEK():HASBODY){
+					//Checks if current and second-transfer parent bodies are the same
+					IF(transfers:PEEK():BODY = SHIP:BODY:BODY){
+						//Pop the second body for a double-transfer
+						SET secondTransfer TO transfers:POP().
+					}
+				}
+				
+				//Pass the transfer(s)
+				RUNPATH("mission operations/main functions/transfer.ks", nextTransfer, secondTransfer).
 			}
 			SET STAGE_ID TO "ARRIVED".
 		
@@ -196,7 +232,10 @@
 				RUNPATH("mission operations/main functions/rendezvous.ks", _entity).
 			}
 			ELSE IF(_action = "dock"){
-				RUNPATH("mission operations/main functions/rendezvous.ks", _entity).
+				//If distance > 1km, rendezvous
+				IF(entityDistance > rendezvousDistance){
+					RUNPATH("mission operations/main functions/rendezvous.ks", _entity).
+				}	
 				RUNPATH("mission operations/main functions/dock.ks", _entity).
 			}
 			ELSE IF(_action = "orbit"){

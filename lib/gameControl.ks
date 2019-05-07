@@ -1,11 +1,14 @@
 FUNCTION warpTime {
-	PARAMETER _duration.
-	LOCAL warpTimer IS TIME:SECONDS + _duration.
+	PARAMETER _toTime.
+	PARAMETER _stopOnNextPatch IS FALSE.
+	
+	KUNIVERSE:TIMEWARP:CANCELWARP().
 	WAIT UNTIL WARP = 0 AND SHIP:UNPACKED.
-	KUNIVERSE:TIMEWARP:WARPTO(TIME:SECONDS + _duration).	
-	UNTIL(TIME:SECONDS >= warpTimer){
+	KUNIVERSE:TIMEWARP:WARPTO(_toTime).	
+	UNTIL(TIME:SECONDS >= _toTime){
 		CLEARSCREEN.
-		PRINT("Time left : " + (warpTimer - TIME:SECONDS)).
+		PRINT("Time left : " + (_toTime - TIME:SECONDS)).
+		IF(_stopOnNextPatch AND SHIP:ORBIT:HASNEXTPATCH){ BREAK. } //If found next patch, exit
 	}
 	WAIT UNTIL WARP = 0 AND SHIP:UNPACKED.
 }

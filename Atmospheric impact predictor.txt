@@ -1,0 +1,18 @@
+https://gitlab.com/BoostCookie/kos-boostback-and-land/blob/master/predict.ks
+
+Bad?
+Remove changes from impactProperties
+
+
+Instead, pass current orbit parameters and required impact location to Java program.
+We can take advantage of the increased computation power, and check for each point in the orbit
+what the delta-V is to impact at the location.
+Thus we can use any orbit rather than iterating along a circular orbit.
+
+
+
+Perhaps, some kind of data stream? One writes, one reads the same file, both update? Semaphore though,
+can both open it at once? 
+Allow main program to run while it waits for result, e.g. just by locking.
+At a certain altitude where faster reaction is required, switch to non-atmo predictions which will
+be relatively accurate by that time.

@@ -53,7 +53,7 @@ FUNCTION lambertOptimize {
 		
 		
 	//Waits until a result is returned
-	WAIT UNTIL (VOLUME(0):EXISTS(completePath)).
+	waitForResult().
 	
 	//Loads the result into a lexicon
 	LOCAL resLex IS LEXICON().
@@ -65,7 +65,6 @@ FUNCTION lambertOptimize {
 	//Returns the result
 	RETURN resLex.
 }
-
 
 
 //Returns a queue structure
@@ -84,7 +83,7 @@ FUNCTION findPath {
 		job:WRITELN("" + endPosition:LNG).
 		
 	//Waits until a result is returned
-	WAIT UNTIL VOLUME(0):EXISTS(completePath).		
+	waitForResult().		
 		
 	//The queue for the strings to be read into
 	LOCAL stringQueue IS QUEUE().	
@@ -108,9 +107,33 @@ FUNCTION findPath {
 	RETURN pathQueue.
 }
 
+
 //Cleans up the processing results
 FUNCTION clean {
   deletepath(requestPath).
   deletepath(resultPath).
   deletepath(completePath).
+}
+
+FUNCTION waitForResult {
+	CLEARSCREEN.
+	LOCAL ticker IS 0.
+	UNTIL (VOLUME(0):EXISTS(completePath)){
+		CLEARSCREEN.
+		PRINT("*     kOS Processor v1.2     *").
+		PRINT("------------------------------").
+		PRINT("").
+		
+		//Print the ticker marks
+		IF(ticker = 0){ PRINT("    / Waiting for result \    "). }
+		IF(ticker = 1){ PRINT("    - Waiting for result -    "). }
+		IF(ticker = 2){ PRINT("    \ Waiting for result /    "). }
+		IF(ticker = 3){ PRINT("    | Waiting for result |    "). }
+		
+		//Update ticker
+		SET ticker TO ticker + 1.
+		IF(ticker = 4){ SET ticker TO 0. }
+		WAIT 0.01.
+	}
+	CLEARSCREEN.
 }

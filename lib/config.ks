@@ -1,15 +1,18 @@
 //Loads the configuration file for a vessel and applies it
 //Creates a new one if one does not already exist
 FUNCTION configureVessel {
-	LOCAL configPath IS ("ship configs/" + SHIP:NAME + ".ksc").
+	PARAMETER _vesselName IS SHIP:NAME.
+
+	LOCAL configPath IS ("ship configs/" + _vesselName + ".ksc").
 
 	//If does not exist, creates config file with ship name
 	IF(VOLUME(0):EXISTS(configPath) = FALSE){
 		LOCAL configLex IS LEXICON().
 			configLex:ADD("PITCHTS", STEERINGMANAGER:PITCHTS).
 			configLex:ADD("YAWTS", STEERINGMANAGER:YAWTS).
-			configLex:ADD("ROLLTS", STEERINGMANAGER:ROLLTS).
-			configLex:ADD("MAXSTOPPINGTIME", STEERINGMANAGER:MAXSTOPPINGTIME).
+			configLex:ADD("ROLLTS", STEERINGMANAGER:ROLLTS).			
+			IF(SHIP:MASS > 10){ configLex:ADD("MAXSTOPPINGTIME", STEERINGMANAGER:MAXSTOPPINGTIME). }
+			ELSE { configLex:ADD("MAXSTOPPINGTIME", 0.5). }
 			configLex:ADD("ROLLCONTROLANGLERANGE", STEERINGMANAGER:ROLLCONTROLANGLERANGE).
 			configLex:ADD("PITCHTORQUEADJUST", STEERINGMANAGER:PITCHTORQUEADJUST).
 			configLex:ADD("YAWTORQUEADJUST", STEERINGMANAGER:YAWTORQUEADJUST).

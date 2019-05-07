@@ -14,3 +14,7 @@ Dealing with KOS's extremely low number of computations per-second with regards 
  - This may allow for proper and accurate predictions in-atmosphere without having the bottleneck.
 
 Either perform a cleanup of the lambert solver/optimizer files, or write your own version that will be more compatible.
+
+
+
+Do a big cleanup of lambert.lib and the whole processing executable

@@ -1,0 +1,22 @@
+Takes optional parameter (landing site/vessel)
+On init, first clear the directory, then write a launch file containing booster target
+Rocket will launch, and determine a point for the control to switch to booster (much preferably after payload has performed final burn?) (Preferably hold onto booster until apoapsis)
+Booster will run a boot script (boosterBoot.ks) that will look for that file and get the parameters (else lands where it will impact)
+Booster then runs land.ks with those parameters
+
+BOOSTERBOOT
+If not landed, splashed, height above terrain/ocean < 100,
+get paremters
+run land
+
+
+
+
+
+
+
+Also launch/land idea:
+Place a mobile platform at estimated landing site (e.g. on duna)
+booster will land on it
+return the rocket back to base, move another mobile platform to the landing site
+fly/attach a new payload on top

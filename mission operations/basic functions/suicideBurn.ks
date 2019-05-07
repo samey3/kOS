@@ -41,13 +41,13 @@
 	//	LOCK distanceLeft TO (SHIP:POSITION - SHIP:BODY:POSITION):MAG - SHIP:BODY:RADIUS - SHIP:GEOPOSITION:TERRAINHEIGHT.
 	//}
 	LOCAL LOCK altitude TO (SHIP:POSITION - SHIP:BODY:POSITION):MAG.	
-	LOCAL LOCK v_i TO -VERTICALSPEED.
+	LOCAL LOCK v_i TO -VERTICALSPEED.  //-SHIP:VELOCITY:SURFACE:MAG.
 	LOCAL v_f IS 0.
 
 	//Acceleration properties
 	LOCAL base_acceleration IS (-SHIP:AVAILABLETHRUST/SHIP:MASS)*0.90. //Makes estimates with 90% avaiable thrust, so it may increase throttle later if needed
 	LOCAL effective_acceleration IS base_acceleration + SHIP:BODY:MU/(altitude^2).
-	LOCAL LOCK stopDistance TO ((v_f^2 - v_i^2)/(2*effective_acceleration)) + shipHeight.
+	LOCAL LOCK stopDistance TO ((v_f^2 - v_i^2)/(2*effective_acceleration)).
 		
 	//Sets up the RCS thrusters
 	LOCAL rcsLimiter IS (SHIP:MASS/2.6).
@@ -105,7 +105,7 @@
 	LOCAL t2 IS 0.
 	LOCAL t3 IS 0.
 	
-	UNTIL(distanceLeft <= (stopDistance + ABS(VERTICALSPEED*0.02))){
+	UNTIL(distanceLeft <= (stopDistance + shipHeight + ABS(VERTICALSPEED*0.02))){
 		CLEARSCREEN.
 		PRINT("ALT : " + distanceLeft).
 		PRINT("base_acceleration : " + base_acceleration).

@@ -1,0 +1,2 @@
+With local-driving (e.g. in a base), can overlay a grid of nodes of some radius. If a vessel is within distance of node, don't create the node.
+Place additional nodes near the destination angled away at the correct orientation and attach them somehow?

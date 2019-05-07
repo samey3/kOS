@@ -1,0 +1,21 @@
+https://www.reddit.com/r/Kos/comments/6xbx8j/ksp_aerodynamics_model/
+
+(1/2 * density * V2 ) * (Cd * A) = Drag
+
+https://www.reddit.com/r/Kos/comments/1mmotv/how_to_determine_atmospheric_drag_on_your_craft/
+Cd usually 0.2?
+
+set Cd to .2.
+set Drag to A*q*Speed*Cd.
+
+A = SHIP:MASS*0.008
+q = dynamics pressure based on altitude
+
+
+
+
+Use these forces:
+Gravity
+Drag
+Lift
+Thrust (placement also results in net moment)

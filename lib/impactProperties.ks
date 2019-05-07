@@ -240,3 +240,114 @@ FUNCTION predictImpactCoords{
 		
 		RETURN LATLNG(interceptCoordinates:LAT, impactLng).
 }
+
+
+//-----------------------------------------------------------------------------------------------------------
+// 	Name: predictImpactCoords
+//	Parameters : 
+//		- Periapsis
+//		- Reference altitude (altitude above sea-level)
+//		- Inclination
+//		- Mean anomaly if from current mean anomaly
+//
+//	This function is meant to be used with iteration in order 
+//	to find the parameters to deorbit with to hit a target location
+//
+//-----------------------------------------------------------------------------------------------------------
+
+
+//returns the geoposition of where your craft will be when it is at _refAltitude above the terrain
+FUNCTION testPredict {
+	//LOCAL curlandcoord IS latlng(0,0).
+	//LOCAL landcoordevaltime IS 0.
+	//LOCAL landcoordevalduration IS 0.
+	//LOCAL landcoordspeed IS 0.
+
+	PARAMETER _CdTimesA IS 0.
+	PARAMETER _refAltitude IS 0.
+	PARAMETER _vessel IS SHIP.
+	
+	LOCAL ref_pos IS _vessel:POSITION - _vessel:BODY:POSITION.
+	LOCAL ref_vel IS _vessel:VELOCITY:ORBIT.
+	
+	
+	//LOCAL prevlandcoordevaltime IS landcoordevaltime.
+	//SET landcoordevaltime TO time:seconds.
+	LOCAL newgeocoord IS latlng(0,0).
+	//does a stepwise simulation UNTIL the craft hits the _refAltitude
+	
+	//takes about half a second to compute
+	LOCAL simtime IS 0.
+	UNTIL (ref_vel:MAG < (_vessel:BODY:radius + _refAltitude)) {
+		
+		//UNTIL ref_vel:MAG - _refAltitude < max(_vessel:BODY:radius, _vessel:BODY:radius + newgeocoord:terrainheight) {
+		LOCAL dragacc IS dragforce(_CdTimesA, ref_vel:MAG-_vessel:BODY:radius, ref_vel - VCRS(_vessel:BODY:ANGULARVEL, ref_vel), _vessel:BODY)/ref_vel:MASS.
+		
+		//get less accurate when no drag is there
+		LOCAL timestep IS 7.
+		IF dragacc:MAG = 0 { SET timestep TO 30. }
+		SET simtime TO simtime + timestep.
+		LOCAL accres IS gravitacc(ref_vel, _vessel:BODY) + dragacc.
+		SET ref_vel TO accres / 2 * timestep * timestep + ref_vel * timestep + ref_vel.
+		SET ref_vel TO accres * timestep + ref_vel.
+		
+		//for the geocoordinates, take the rotation of the planet into account
+		SET newgeocoord TO convertPosvecToGeocoord(r(0, _vessel:BODY:ANGULARVEL:MAG * simtime * constant:RadToDeg, 0) * ref_vel).
+	}
+	
+	
+	//SET landcoordevalduration TO TIME:SECONDS - landcoordevaltime.
+	//LOCAL prevlandcoord IS curlandcoord.
+	//SET curlandcoord TO newgeocoord.
+	//SET landcoordspeed TO (curlandcoord:POSITION - prevlandcoord:POSITION):MAG/(landcoordevaltime - prevlandcoordevaltime).
+	//return curlandcoord.
+	RETURN newgeocoord.
+}
+
+
+function convertPosvecToGeocoord {
+	parameter posvec.
+	
+	//sphere coordinates relative to xyz-coordinates
+	local lat is 90 - vang(v(0,1,0), posvec).
+	
+	//circle coordinates relative to xz-coordinates
+	local equatvec is v(posvec:x, 0, posvec:z).
+	local phi is vang(v(1,0,0), equatvec).
+	if equatvec:z < 0 {
+		set phi to 360 - phi.
+	}
+	
+	//angle between x-axis and geocoordinates
+	local alpha is vang(v(1,0,0), latlng(0,0):position - ship:body:position).
+	if (latlng(0,0):position - ship:body:position):z >= 0 {
+		set alpha to 360 - alpha.
+	}
+	return latlng(lat, phi + alpha).
+}
+
+function dragforce {
+	parameter CdTimesA, height is ship:altitude, velocity is ship:velocity:surface, refbody is ship:body.
+	return -density(height, refbody) * velocity:normalized * velocity:sqrmagnitude * CdTimesA / 2000.
+}
+
+declare function gravitacc {
+	parameter position is ship:position - ship:body:position, refbody is ship:body.
+	return -refbody:mu * position:normalized / position:sqrmagnitude.
+}
+
+
+//Idea:
+//Iterate per unit time or vertical height?
+//Per unit time*
+
+//Iterate until it reaches radius equal to the terrain height
+//Initial : Position vector, velocity vector
+//Find    : Time to altitude, final vector  
+
+//At each time step, apply gravitational and drag forces.
+//->Must find the coefficient of drag, assume retrograde orientation of craft.
+
+
+//From script side, record time that call was made (and pos/vel parameters passed)
+//Then base the time diff returned on that initial time.

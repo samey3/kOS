@@ -20,7 +20,7 @@
 	//Move into equatorial orbit--------------------------|
 		SET STAGE_ID TO "LAND_PREPARE".
 		//At a later point, create a script that can land from any orbit.
-		//RUNPATH("mission operations/intermediate functions/refineOrbit.ks", maxTimes, orbitLex).
+		//RUNPATH("mission operations/intermediate functions/setOrbit.ks", maxTimes, orbitLex).
 		
 	//----------------------------------------------------\
 	//Execute the landing script--------------------------|

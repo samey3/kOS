@@ -1,4 +1,3 @@
-
 //-----------------------------------------------------------------------------------------------------------
 // 	Name: solarVelocity
 //	Parameters : 
@@ -8,6 +7,28 @@
 FUNCTION solarVelocity {
 	PARAMETER _body.
 	RETURN -(SUN:VELOCITY:ORBIT - _body:VELOCITY:ORBIT).
+}
+
+//-----------------------------------------------------------------------------------------------------------
+// 	Name: meanAnomaly
+//	Parameters : 
+//		- Gets an an object's mean anomaly
+//	
+//-----------------------------------------------------------------------------------------------------------
+FUNCTION meanAnomaly {
+	PARAMETER _body.
+
+	//Position and eccentricity vectors
+	LOCAL posVec IS _body:POSITION - _body:BODY:POSITION.
+	LOCAL eccVec IS (_body:VELOCITY:ORBIT:MAG^2/_body:BODY:MU - 1 / posVec:MAG)*posVec - (VDOT(posVec, _body:VELOCITY:ORBIT)/_body:BODY:MU)*_body:VELOCITY:ORBIT.
+	
+	//Eccentric anomaly
+	LOCAL E IS 2*ARCTAN2(SIN(_body:ORBIT:TRUEANOMALY/2)*SQRT((1 - eccVec:MAG) / (1 + eccVec:MAG)), COS(_body:ORBIT:TRUEANOMALY/2)).
+	
+	//Mean anomaly
+	LOCAL M IS CONSTANT:RADTODEG * ((CONSTANT:DEGTORAD * _body:ORBIT:ECCENTRICITY) - eccVec:MAG*SIN(_body:ORBIT:ECCENTRICITY)).
+	
+	RETURN M.
 }
 
 
@@ -92,5 +113,62 @@ FUNCTION nodeFromDesiredVector {
 	//--------------------------------------------------------------------------/
 	
 	
-		return nodeFromVector(_time, changeVector).
+		RETURN nodeFromVector(_time, changeVector).
+}
+
+//-----------------------------------------------------------------------------------------------------------
+// 	Name: changeVectorFromNode
+//	Parameters : 
+//		- Returns the velocity change vector of the node at the maneuver time
+//	
+//-----------------------------------------------------------------------------------------------------------
+FUNCTION changeVectorFromNode {
+
+	//--------------------------------------------------------------------------\
+	//								Parameters					   				|
+	//--------------------------------------------------------------------------/
+
+
+		PARAMETER _node.
+		
+		
+	//--------------------------------------------------------------------------\
+	//							   Function run					   				|
+	//--------------------------------------------------------------------------/
+	
+	
+		RETURN _node:DELTAV.
+}
+
+//-----------------------------------------------------------------------------------------------------------
+// 	Name: changeVectorFromNode
+//	Parameters : 
+//		- Returns the final velocity vector of the node at the maneuver time
+//	
+//-----------------------------------------------------------------------------------------------------------
+FUNCTION finalVectorFromNode {
+
+	//--------------------------------------------------------------------------\
+	//								Parameters					   				|
+	//--------------------------------------------------------------------------/
+
+
+		PARAMETER _node.
+		
+		
+	//--------------------------------------------------------------------------\
+	//								Variables					   				|
+	//--------------------------------------------------------------------------/
+	
+	
+		LOCAL velocityAtTime IS VELOCITYAT(SHIP, TIME:SECONDS + _node:ETA).
+		LOCAL velocityChange IS _node:DELTAV.
+		
+		
+	//--------------------------------------------------------------------------\
+	//							   Function run					   				|
+	//--------------------------------------------------------------------------/
+	
+	
+		RETURN velocityAtTime + velocityChange.
 }

@@ -217,7 +217,8 @@
 				LOCK STEERING TO SRFRETROGRADE.
 		
 				//IF no atmo, use RCS. If sufficient atmo, use vessel itself
-				IF(SHIP:BODY:ATM:EXISTS AND SHIP:BODY:ATM:SEALEVELPRESSURE >= 0.3){
+				//IF(SHIP:BODY:ATM:EXISTS AND SHIP:BODY:ATM:SEALEVELPRESSURE >= 0.3){
+				IF(SHIP:BODY:ATM:EXISTS){
 					//Initial glide correction code in-atmosphere
 					UNTIL (horizontalDistance <= (0.85*stopDistance)){		
 						CLEARSCREEN.

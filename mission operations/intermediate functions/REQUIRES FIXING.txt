@@ -1,2 +1,4 @@
 LAND 176
 Get rid of circular maneuver somehow
+
+Changes to eject?

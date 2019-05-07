@@ -1,0 +1,35 @@
+send comms msg or file? (Would cause busy wait if comms, but can switch and time warp dist/c)
+
+KSC master scheduler craft, contains a queue (stored in a file).
+Recieving a request adds to the queue.
+Request contains either specific vehicle, or vehicle class/type, and the requesting vessel.
+
+
+Let's make this a universal script. Work on all bases with processing centers. They (from files)
+know what facilities they have, and only the KSC one can spawn payloads (others may attach certain ones).
+
+
+--------------------------------------------------------------------------------------------------------
+
+
+For now, just make all other centers have no 'facilities'.
+
+Vehicle request: request_reciever, "vehicle", vehicle_type, delivery_coordinates (can't pull on-the-fly), requester_craft
+
+Request sent to reciever, now switch to reciever and wait if needed.
+At reciever, adds to its queue. Executes next in queue.
+On execute finish, switch to the requester_craft and it does what ever on its boot.
+^^^^Mission ops or whatever will need to be able to take another parameter, requester_craft to
+	switch to afterwards on finishing (Since request_center just initiates script on another vehicle).
+
+
+Should probably define a checklist for each base, for what else it requires. This way it will
+eventually reach a point where no more requests are needed. From this idea, we can also
+pre-set what kind of base it will be, and from that it will decide what it needs to request.
+->Make a big checklist of possible things (e.g. fuel depot, landing spot, # land vehicles, # rockets, etc.)
+->Make directory of base types, many files, each containing items of checklist that it needs)
+->(Might not need first file), both of these are just general data items at top.
+->Thus, a base processor will have in its file what stuff it has in its base, and its base type
+->It will check its base type, and compare its file to the base type file, and make any remaining requests.
+->Can queue up all of these requests at once (need to keep track if it requested already in its file)
+->E.g. checklist item: { name: "land vehicles", number: 3, requested: true }

@@ -7,4 +7,4 @@ adaptivePanels(TRUE).
 autoStaging(TRUE).
 
 //Does not let the manager end.
-WAIT UNTIL(FALSE). 
+WAIT UNTIL(FALSE).

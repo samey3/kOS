@@ -1,3 +1,4 @@
+	@lazyglobal OFF.
 	CLEARSCREEN.
 
 //---------------------------------------------------------------------------------\
@@ -8,14 +9,6 @@
 	PARAMETER hostObj.
 	PARAMETER hostToPointVec. //Vector extending from host object
 	PARAMETER faceDir IS 0. //Direction to face during move (Default 0 is current facing).
-	
-	
-//--------------------------------------------------------------------------\
-//								 Imports					   				|
-//--------------------------------------------------------------------------/
-
-
-	RUNONCEPATH("lib/shipControl.ks").
 	
 
 //--------------------------------------------------------------------------\
@@ -48,19 +41,21 @@
 	//RCS--------------------------------------|
 	
 		//Movement
-		SET rcsList TO SHIP:PARTSNAMED("RCSBlock").	
-		SET total_rcs_thrust TO rcsList:LENGTH/2. //kN. Can set to the length of the list because each thruster is only 1kN
-		SET base_acceleration TO total_rcs_thrust / SHIP:MASS. //Mass in metric tonnes	
+		LOCAL rcsList IS SHIP:PARTSNAMED("RCSBlock").	
+		LOCAL total_rcs_thrust IS rcsList:LENGTH/2. //kN. Can set to the length of the list because each thruster is only 1kN
+		LOCAL base_acceleration IS total_rcs_thrust / SHIP:MASS. //Mass in metric tonnes	
 		LOCAL LOCK thrustPercent TO ((base_acceleration * SHIP:MASS) / total_rcs_thrust).
+		LOCAL moveSpeed IS 0.
 		IF(toPointVector:MAG < 10){
 			SET moveSpeed TO SQRT(2*base_acceleration*toPointVector:MAG*(3/8)). }
 		ELSE{
 			SET moveSpeed TO SQRT(0.2*toPointVector:MAG*base_acceleration).	}
 			
-		SET thrustTime TO moveSpeed/base_acceleration.
+		LOCAL thrustTime IS moveSpeed/base_acceleration.
 				
 		//RCS blocks and thrust limits
-		SET rcsList TO list().
+		SET rcsList TO LIST().
+		LOCAL partList IS LIST().
 		LIST PARTS IN partList.
 		FOR part IN partList
 		{
@@ -83,7 +78,7 @@
 
 		//Difference variables
 		LOCAL LOCK differenceVec TO (c_toPointVector:NORMALIZED*moveSpeed - c_relVel).
-		SET correctionAcceleration TO base_acceleration*0.05.
+		LOCAL correctionAcceleration IS base_acceleration*0.05.
 	
 		//Distance to deceleration start
 		LOCAL distStart IS 0.5*base_acceleration*thrustTime^2. //This was a SET before, but this likely works better?
@@ -91,10 +86,11 @@
 	
 	//-----------------------------------------\
 	//Drawn vectors----------------------------|
-		
-		SET htp TO VECDRAWARGS(hostObj:POSITION, hostToPointVec,YELLOW,"Host vector",1,TRUE).
-		SET stp TO VECDRAWARGS(SHIP:POSITION, toPointVector,RED,"Ship vector",1,TRUE).
 	
+		LOCAL contTime IS 0.
+		LOCAL htp IS 0.
+		LOCAL stp IS 0.
+
 	
 //--------------------------------------------------------------------------\
 //								Program run					   				|
@@ -102,47 +98,56 @@
 
 
 	//-----------------------------------------\
+	//Disable user control, enable systems-----|
+		SET CONTROLSTICK to SHIP:CONTROL.
+		LOCAL initFace IS SHIP:FACING. //Redundant, remove this on the next cleanup
+		LOCK faceDirection TO initFace.
+		LOCK STEERING TO faceDirection.
+
+	//-----------------------------------------\
 	//Output header info-----------------------|
 		PRINT("     Move-to point subscript     ").
 		PRINT("---------------------------------").
 		PRINT("Distance : " + (ROUND(toPointVector:MAG*10)/10) + " meters").
 		
-		
+	//-----------------------------------------\
+	//Draw vectors-----------------------------|
+		SET htp TO VECDRAWARGS(hostObj:POSITION, hostToPointVec, YELLOW, "Host vector", 1, TRUE).
+		SET stp TO VECDRAWARGS(SHIP:POSITION, toPointVector, RED, "Ship vector", 1, TRUE).
 	
-
 	//-----------------------------------------\
 	//Reduce relative velocity, orientate------|
-		RUNPATH("basic_functions/modVelocity.ks", shipRoot, V(0,0,0)).
+		RUNPATH("mission operations/basic functions/modVelocity.ks", shipRoot, V(0,0,0)).
 		RCS ON.
 		IF(faceDir = 0){
-			SET dir TO SHIP:FACING.
-			LOCK STEERING TO dir.
 			WAIT UNTIL SHIP:ANGULARMOMENTUM:MAG < 0.1.
 		}
 		ELSE IF (faceDir = 1){
-			LOCK STEERING TO LOOKDIRUP(((hostObj:POSITION + hostToPointVec)-SHIP:POSITION), shipRoot:FACING:TOPVECTOR). //targetCraft
+			LOCK faceDirection TO LOOKDIRUP(((hostObj:POSITION + hostToPointVec)-SHIP:POSITION), shipRoot:FACING:TOPVECTOR). //targetCraft
+			LOCK STEERING TO faceDirection.
 			WAIT UNTIL VECTORANGLE(SHIP:FACING:VECTOR,((hostObj:POSITION + hostToPointVec)-SHIP:POSITION)) < 0.3 AND SHIP:ANGULARMOMENTUM:MAG < 0.025.
-			//SET dir TO SHIP:FACING.
-			//LOCK STEERING TO dir.
 		}
-		RUNPATH("basic_functions/modVelocity.ks", shipRoot, V(0,0,0)).
+		RUNPATH("mission operations/basic functions/modVelocity.ks", shipRoot, V(0,0,0)).
 		
-	//-----------------------------------------\
-	//Disable user control, enable systems-----|
-		SET CONTROLSTICK to SHIP:CONTROL. 
-		RCS ON.
-		SAS ON.
-	
-	
+
 //---------------------------------------------\
 //				  	Accelerate				   |
 //---------------------------------------------/
 
-
+	RCS ON.
+	LOCK STEERING TO faceDirection.
+	
 	SET SHIP:CONTROL:FORE TO thrustPercent*c_toPointVector:NORMALIZED:X/2. 
 	SET SHIP:CONTROL:TOP TO thrustPercent*c_toPointVector:NORMALIZED:Y.
 	SET SHIP:CONTROL:STARBOARD TO thrustPercent*c_toPointVector:NORMALIZED:Z.
-	WAIT thrustTime.
+
+	SET contTime TO TIME:SECONDS + thrustTime.
+	UNTIL (TIME:SECONDS >= contTime){
+		//Redraw the vectors
+		SET htp TO VECDRAWARGS(hostObj:POSITION, hostToPointVec, YELLOW, "Host vector", 1, TRUE).
+		SET stp TO VECDRAWARGS(SHIP:POSITION, toPointVector, RED, "Ship vector", 1, TRUE).
+	}
+
 	SET SHIP:CONTROL:FORE TO 0. 
 	SET SHIP:CONTROL:TOP TO 0.
 	SET SHIP:CONTROL:STARBOARD TO 0.
@@ -154,9 +159,7 @@
 		
 
 	//Sets the thrust limit for all RCS blocks
-	FOR block IN rcsList {
-		block:SETFIELD("thrust limiter", 10).
-	}
+	setRCSThrust(rcsList, 10).
 	
 	//Manage velocity until deceleration distance
 	UNTIL (toPointVector:MAG <= distStart) {	
@@ -188,17 +191,14 @@
 		PRINT "Y: " + differenceVec:Y.
 		PRINT "Z: " + differenceVec:Z.
 			
-		//Resets the vectors
+		//Redraws the vectors
 		SET htp TO VECDRAWARGS(hostObj:POSITION, hostToPointVec,YELLOW,"Host vector",1,TRUE).
 		SET stp TO VECDRAWARGS(SHIP:POSITION, toPointVector,RED,"Ship vector",1,TRUE).
 	}
 
 	
 	//Resets all RCS block thrust limiters
-	FOR block IN rcsList {
-		block:SETFIELD("thrust limiter", 100).
-	}
-	
+	setRCSThrust(rcsList, 100).
 	
 //---------------------------------------------\
 //				  	Decelerate				   |
@@ -215,14 +215,21 @@
 	SET SHIP:CONTROL:FORE TO -thrustPercent*c_toPointVector:NORMALIZED:X/2. 
 	SET SHIP:CONTROL:TOP TO -thrustPercent*c_toPointVector:NORMALIZED:Y.
 	SET SHIP:CONTROL:STARBOARD TO -thrustPercent*c_toPointVector:NORMALIZED:Z.
-	WAIT thrustTime.
+	
+	SET contTime TO TIME:SECONDS + thrustTime.
+	UNTIL (TIME:SECONDS >= contTime){
+		//Redraw the vectors
+		SET htp TO VECDRAWARGS(hostObj:POSITION, hostToPointVec, YELLOW, "Host vector", 1, TRUE).
+		SET stp TO VECDRAWARGS(SHIP:POSITION, toPointVector, RED, "Ship vector", 1, TRUE).
+	}
+	
 	SET SHIP:CONTROL:FORE TO 0. 
 	SET SHIP:CONTROL:TOP TO 0.
 	SET SHIP:CONTROL:STARBOARD TO 0.
 	
 	//If not docking, cancel relative velocity
 	if(hostToPointVec:MAG > 4){
-		RUNPATH("basic_functions/modVelocity.ks", shipRoot, V(0,0,0)). }	
+		RUNPATH("mission operations/basic functions/modVelocity.ks", shipRoot, V(0,0,0)). }	
 	
 	
 //--------------------------------------------------------------------------\
@@ -259,3 +266,19 @@
 	CLEARVECDRAWS().
 	
 	WAIT 1.
+	
+	
+	
+//--------------------------------------------------------------------------\
+//								Functions					   				|
+//--------------------------------------------------------------------------/
+	
+	
+	//Set RCS thrust (0-100)
+	FUNCTION setRCSThrust{
+		PARAMETER _rcsList.
+		PARAMETER _thrustValue.
+		FOR block IN _rcsList {
+			block:SETFIELD("thrust limiter", _thrustValue).
+		}
+	}

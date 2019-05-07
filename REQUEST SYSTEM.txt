@@ -1,0 +1,12 @@
+With the checklist thing...
+
+Each processing center should use the same scripts.
+
+Self-requests are the way to go.
+
+If it wants to launch a rocket, it will add requests to its own queue:
+->Drive platform to some location (will return to requester after)
+->Launch rocket (with 'some location' for booster landing site)
+
+If it wats to drive a craft somewhere, it just sends a request to itself and lets the request
+system handle it.

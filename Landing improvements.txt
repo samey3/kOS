@@ -1,0 +1,5 @@
+On first burn in atmosphere to reduce distance between desired and predicted landing locations,
+Instead of facing complete retrograde of the current surface velocity, tilt it slightly so
+it will experience no vertical acceleration (take into account Fg) and hold that vector.
+This way, the vector direction will not move, and if needing to gain 'negative' horizontal
+velocity to reach the target, it will be able to properly do it and not get stuck vertical.

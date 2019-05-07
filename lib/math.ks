@@ -28,6 +28,12 @@ FUNCTION percentDifference {
 	RETURN 2*ABS(_A - _B)/(_A + _B).
 }
 
+FUNCTION scalarDifference {
+	PARAMETER _A.
+	PARAMETER _B.
+	RETURN ABS(_A - _B).
+}
+
 
 
 //Vectors

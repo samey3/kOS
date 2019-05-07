@@ -1,0 +1,6 @@
+Move missionBuilder data to top level
+
+Remove boot folder from mission operations
+Does missionBuilder need config.ks?
+
+Place local maneuvering code somewhere
