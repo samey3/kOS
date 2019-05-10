@@ -199,6 +199,43 @@
 		//----------------------------------------------------\
 		//Launch to orbit if required-------------------------|
 			//If not in orbit, launch script here
+			IF(SHIP:STATUS = "LANDED" OR SHIP:STATUS = "SPLASHED" OR SHIP:STATUS = "PRELAUNCH"){
+				SET STAGE_ID TO "PRELAUNCH".
+
+				//If the entity is the body the ship is launching from
+				IF(_entity = SHIP:BODY){
+					//If not landing, use the orbitLex
+					IF(NOT (_action = "land")){
+						RUNPATH("mission operations/main functions/launch.ks", orbitLex).
+					}
+					//If landing, convert the geocoordinates to some kind of lex
+					ELSE {
+						//Later, in here convert coordinates to some kind of orbitLex
+						RUNPATH("mission operations/main functions/launch.ks", 0).
+					}
+					
+				}
+				//If the target entity orbits the same body as the ship is launching from
+				ELSE IF(_entity:HASBODY){
+					//In the case that the target entity is the sun, check first
+					IF(_entity:BODY = SHIP:BODY){
+						//Creates a new lexicon of the required entities orbit parameters
+						LOCAL launchLex IS LEXICON().
+							SET launchLex["semimajoraxis"] TO 0.
+							SET launchLex["eccentricity"] TO 0.
+							SET launchLex["inclination"] TO _entity:ORBIT:INCLINATION.
+							SET launchLex["longitudeofascendingnode"] TO _entity:ORBIT:LONGITUDEOFASCENDINGNODE.
+							SET launchLex["argumentofperiapsis"] TO _entity:ORBIT:ARGUMENTOFPERIAPSIS.
+							SET launchLex["trueanomaly"] TO 0. //Not used anyways?
+						
+						RUNPATH("mission operations/main functions/launch.ks", launchLex).
+					}
+				}
+				//If neither of these conditions
+				ELSE {
+					RUNPATH("mission operations/main functions/launch.ks", orbitLex). //orbitLex or 0 (default), check in script
+				}
+			}			
 			SET STAGE_ID TO "ORBITING".
 			
 		//----------------------------------------------------\
@@ -240,6 +277,11 @@
 			}
 			ELSE IF(_action = "orbit"){
 				RUNPATH("mission operations/main functions/orbit.ks", _orbitLex).
+			}
+			ELSE IF(_action = "launch"){
+				//Nothing here. This is here just to notify of the last option.
+				//Basically just launches to (an optionally specified) orbit.
+				//Launch uses orbitLex
 			}
 		
 		SET STAGE_ID TO "FINISHED".

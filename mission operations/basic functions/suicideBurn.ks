@@ -124,7 +124,7 @@
 		SET t3 TO VECDRAWARGS(SHIP:POSITION, (45*(-ADDONS:TR:PLANNEDVECTOR:NORMALIZED) - (45*(SQRT(impactDif:MAG)/(SQRT(impactDif:MAG) + 10)))*impactDif:NORMALIZED),YELLOW,"Result",1,TRUE).
 	}	
 
-	//Varies the thrust required the descent
+	//Varies the thrust required for the descent
 	LOCK Ar TO ((v_f^2 - v_i^2)/(2*(distanceLeft - shipHeight))).
 	LOCK max_acceleration TO -SHIP:AVAILABLETHRUST/SHIP:MASS + SHIP:BODY:MU/(altitude^2).
 	LOCK thrustPercent TO Ar/max_acceleration.

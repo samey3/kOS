@@ -72,9 +72,9 @@
 	
 	IF(_node:ETA > orientTime){
 		//Warp to the position,
-		PRINT("     Node-burn subscript     ").
-		PRINT("-----------------------------").
-		PRINT("Warping to burn position. . .").
+		PRINT("  Mission Ops - Node execute  ").
+		PRINT("------------------------------").
+		PRINT("Warping to burn position . . .").
 		KUNIVERSE:TIMEWARP:WARPTO(startTime - (burnTime/2 + orientTime)).
 		WAIT UNTIL WARP = 0 and SHIP:UNPACKED.
 	}
@@ -88,8 +88,8 @@
 	RCS ON.
 	UNTIL timeLeft <= burnTime/2{
 		CLEARSCREEN.
-		PRINT "Node-burn subscript".
-		PRINT "--------------------".
+		PRINT("  Mission Ops - Node execute  ").
+		PRINT("------------------------------").
 		PRINT "ΔV 					: " + (ROUND(_node:DELTAV:MAG*10)/10)  + " m/s".
 		PRINT "Burn time 			: " + (ROUND(burnTime*10)/10)  + " s".
 		PRINT " ".

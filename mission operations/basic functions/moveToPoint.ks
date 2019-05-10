@@ -106,8 +106,8 @@
 
 	//-----------------------------------------\
 	//Output header info-----------------------|
-		PRINT("     Move-to point subscript     ").
-		PRINT("---------------------------------").
+		PRINT("      Mission Ops - Dock      ").
+		PRINT("------------------------------").
 		PRINT("Distance : " + (ROUND(toPointVector:MAG*10)/10) + " meters").
 		
 	//-----------------------------------------\
@@ -181,12 +181,12 @@
 			
 		//Output info to terminal
 		CLEARSCREEN.
-		PRINT("     Move-to point subscript     ").
-		PRINT("---------------------------------").
+		PRINT("      Mission Ops - Dock      ").
+		PRINT("------------------------------").
 		PRINT("Distance to deceleration : " + (ROUND((toPointVector:MAG - distStart)*10)/10) + " m").
 		PRINT(" ").
 		PRINT "Difference components".
-		PRINT "-----------------------------------------".
+		PRINT("------------------------------").
 		PRINT "X: " + differenceVec:X.
 		PRINT "Y: " + differenceVec:Y.
 		PRINT "Z: " + differenceVec:Z.
@@ -207,9 +207,9 @@
 	
 	//Output info to terminal
 	CLEARSCREEN.
-	PRINT("~~~~~Move-to point subscript~~~~~").
-	PRINT("---------------------------------").
-	PRINT("Decelerating. . . . . . . . . . .").
+	PRINT("      Mission Ops - Dock      ").
+	PRINT("------------------------------").
+	PRINT("Decelerating . . . . . . . . .").
 
 	LOCK STEERING TO SHIP:FACING.
 	SET SHIP:CONTROL:FORE TO -thrustPercent*c_toPointVector:NORMALIZED:X/2. 
@@ -239,8 +239,8 @@
 	
 	//Outputs the error distance to the desired point
 	CLEARSCREEN.
-	PRINT("~~~~~Move-to point subscript~~~~~").
-	PRINT("---------------------------------").
+	PRINT("      Mission Ops - Dock      ").
+	PRINT("------------------------------").
 	PRINT("Error distance : " + (ROUND((((hostObj:POSITION + hostToPointVec) - SHIP:POSITION):MAG)*100)/100) + " meters").
 	
 	//Returns user control
