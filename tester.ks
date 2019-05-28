@@ -3,6 +3,7 @@ RUNONCEPATH("lib/config.ks").
 RUNONCEPATH("lib/gameControl.ks").
 RUNONCEPATH("lib/lambert.ks").
 RUNONCEPATH("lib/math.ks").
+RUNONCEPATH("lib/mission.ks").
 
 CLEARSCREEN.
 LOCK STEERING TO SHIP:FACING.
@@ -33,6 +34,12 @@ LOCAL orbitLex IS LEXICON().
 //RUNPATH("mission operations/missionBuilder.ks", MOHO, "orbit", 0, orbitLex).
 //RUNPATH("mission operations/missionBuilder.ks", MOHO, "orbit", 0, orbitLex).
 //RUNPATH("mission operations/missionBuilder.ks", MOHO, "orbit", 0, orbitLex).
+//RUNPATH("mission operations/missionBuilder.ks", MOHO, "orbit", 0, orbitLex).
+
+
+
+
+RUNPATH("_operation scenarios/mun_lander.ks").
 
 
 

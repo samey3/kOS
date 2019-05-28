@@ -84,8 +84,8 @@
 
 	//Disables user control
 	SET CONTROLSTICK to SHIP:CONTROL.
-	LOCK STEERING TO smoothRotate(SHIP:FACING).
-	SAS ON.
+	LOCK STEERING TO SHIP:FACING.
+	//SAS ON.
 	RCS ON.	
 
 

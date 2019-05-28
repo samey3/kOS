@@ -205,7 +205,7 @@ FUNCTION predictImpactCoords{
 		LOCAL positionVector IS (SHIP:POSITION - BODY:POSITION).
 		LOCAL velocityVector IS SHIP:VELOCITY:ORBIT.		
 		LOCAL eccentricityVector IS -(ANGLEAXIS(_meanShift, SHIP:BODY:ANGULARVEL)*(SHIP:POSITION - BODY:POSITION)).
-		LOCAL momentumVector IS ANGLEAXIS(_inclination, eccentricityVector)*SHIP:BODY:ANGULARVEL:NORMALIZED*(ship:body:radius + 200000).
+		LOCAL momentumVector IS ANGLEAXIS(_inclination, eccentricityVector)*SHIP:BODY:ANGULARVEL:NORMALIZED*(SHIP:BODY:RADIUS + 200000).
 		
 		//Given orbital parameters
 		LOCAL _apoapsis IS (SHIP:BODY:RADIUS + SHIP:ORBIT:APOAPSIS).

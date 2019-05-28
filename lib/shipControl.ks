@@ -3,6 +3,7 @@
 //--------------------------------------------------------------------------/
 
 
+	//This can likely be converted to be used on the main processor
 	FUNCTION autoStaging {
 		//Can also use a ship config and a list of id's to check and use the ACTUAL stage function.
 

@@ -116,23 +116,7 @@
 			SET lan TO _orbitObject["longitudeofascendingnode"].
 			SET argp TO _orbitObject["argumentofperiapsis"].
 			SET tanm TO _orbitObject["trueanomaly"].
-		}
-		
-		
-		//PRINT(percentDifference(SHIP:ORBIT:SEMIMAJORAXIS, sma) < 0.01).
-		//PRINT(scalarDifference(SHIP:ORBIT:INCLINATION, inc) < 0.01).
-		//PRINT("SHOW : " + (scalarDifference(SHIP:ORBIT:INCLINATION, inc) < 0.01)).
-		//PRINT("SHOW : " + SHIP:ORBIT:INCLINATION).
-		//PRINT("SHOW : " + inc).
-		//PRINT(scalarDifference(SHIP:ORBIT:ECCENTRICITY, ecc) < 0.01).
-		//PRINT("SHOW : " + (scalarDifference(SHIP:ORBIT:ECCENTRICITY, ecc) < 0.001)).
-		//PRINT("SHOW : " + SHIP:ORBIT:ECCENTRICITY).
-		//PRINT("SHOW : " + ecc).
-		//PRINT((scalarDifference(SHIP:ORBIT:LONGITUDEOFASCENDINGNODE, lan) < 0.01 OR inc < 0.5)).
-		//PRINT((scalarDifference(SHIP:ORBIT:ARGUMENTOFPERIAPSIS, argp) < 0.01 OR ecc < 0.05)).
-		//PRINT((NOT _matchTrueAnomaly OR scalarDifference(SHIP:ORBIT:TRUEANOMALY, tanm) < 0.01)).
-		//WAIT 5.
-		
+		}		
 		
 		//If the difference of each parameter is less than 1%, or 0.01 degrees, return true
 		IF((percentDifference(SHIP:ORBIT:SEMIMAJORAXIS, sma) < 0.01 //Will be large numbers, thus percentDifference is appropriate

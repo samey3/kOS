@@ -1,0 +1,2 @@
+It seems vessels can communicate with serializable variables, thus can store all parameters
+inside a lexicon, and send the lexicon itself.

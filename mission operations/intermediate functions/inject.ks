@@ -27,11 +27,9 @@
 	//----------------------------------------------------\
 	//Perform the intercept burn--------------------------|	
 		RUNPATH("mission operations/intermediate functions/setOrbit.ks", _body, TRUE, FALSE, TRUE).
-		PRINT("REG WARP").
-		WAIT 3.
+
 		//setOrbit will warp until it has a patch
-		warpTime(TIME:SECONDS + SHIP:ORBIT:NEXTPATCHETA + 30, FALSE).
-		
+		warpTime(TIME:SECONDS + SHIP:ORBIT:NEXTPATCHETA + 30, FALSE).		
 		
 	
 	//----------------------------------------------------\

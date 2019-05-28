@@ -1,5 +1,8 @@
 	@lazyglobal OFF.
 	CLEARSCREEN.
+	
+	//Set pilot values
+	SET SHIP:CONTROL:PILOTMAINTHROTTLE TO 0.
 
 	//Unset steering
 	LOCK STEERING TO SHIP:FACING.
@@ -41,8 +44,7 @@
 
 
 	IF(_entity <> 0){
-		IF((_action = "land" AND _landCoordinates = 0) //Or check for wrong type
-			OR (_action = "orbit" AND _orbitLex = 0)	
+		IF((_action = "orbit" AND _orbitLex = 0)	//OR (_action = "land" AND _landCoordinates = 0)
 		){
 			PRINT ("Operation conditions not met ( " + SCRIPTPATH():NAME + " ).").
 			PRINT ("Rebooting. . ."). 
@@ -96,10 +98,9 @@
 
 	IF(SHIP:PARTSTAGGED("systems manager"):LENGTH <> 0){
 		LOCAL systemsCore IS ((SHIP:PARTSTAGGED("systems manager"))[0]):GETMODULEBYINDEX(0).
-		ON((STAGE_ID + "_" + TRANSFER_COUNT)){
+		ON((TRANSFER_COUNT + "_" + STAGE_ID)){
 			LOCAL stageMessage IS (TRANSFER_COUNT + "_" + STAGE_ID).
 			systemsCore:CONNECTION:SENDMESSAGE(stageMessage).
-			PRINT("CHANGED : " + stageMessage).
 			WAIT 2.
 			RETURN TRUE.
 		}
@@ -198,7 +199,13 @@
 	
 		//----------------------------------------------------\
 		//Launch to orbit if required-------------------------|
-			//If not in orbit, launch script here
+			//Must check this beforehand since kOS does not support short-circuiting
+			LOCAL sharesSameBody IS FALSE.
+			IF(_entity:HASBODY){
+				IF(_entity:BODY = SHIP:BODY){ SET sharesSameBody TO TRUE. }
+			}
+			
+			//Checks conditions and launches appropriately
 			IF(SHIP:STATUS = "LANDED" OR SHIP:STATUS = "SPLASHED" OR SHIP:STATUS = "PRELAUNCH"){
 				SET STAGE_ID TO "PRELAUNCH".
 
@@ -206,37 +213,34 @@
 				IF(_entity = SHIP:BODY){
 					//If not landing, use the orbitLex
 					IF(NOT (_action = "land")){
-						RUNPATH("mission operations/main functions/launch.ks", orbitLex).
+						RUNPATH("mission operations/main functions/launch.ks", _orbitLex).
 					}
 					//If landing, convert the geocoordinates to some kind of lex
 					ELSE {
-						//Later, in here convert coordinates to some kind of orbitLex
-						RUNPATH("mission operations/main functions/launch.ks", 0).
+						RUNPATH("mission operations/main functions/launch.ks", _landCoordinates).
 					}
 					
 				}
 				//If the target entity orbits the same body as the ship is launching from
-				ELSE IF(_entity:HASBODY){
-					//In the case that the target entity is the sun, check first
-					IF(_entity:BODY = SHIP:BODY){
-						//Creates a new lexicon of the required entities orbit parameters
-						LOCAL launchLex IS LEXICON().
-							SET launchLex["semimajoraxis"] TO 0.
-							SET launchLex["eccentricity"] TO 0.
-							SET launchLex["inclination"] TO _entity:ORBIT:INCLINATION.
-							SET launchLex["longitudeofascendingnode"] TO _entity:ORBIT:LONGITUDEOFASCENDINGNODE.
-							SET launchLex["argumentofperiapsis"] TO _entity:ORBIT:ARGUMENTOFPERIAPSIS.
-							SET launchLex["trueanomaly"] TO 0. //Not used anyways?
-						
-						RUNPATH("mission operations/main functions/launch.ks", launchLex).
-					}
+				ELSE IF(sharesSameBody){
+					//Creates a new lexicon of the required entities orbit parameters
+					LOCAL launchLex IS LEXICON().
+						SET launchLex["semimajoraxis"] TO 0.
+						SET launchLex["eccentricity"] TO 0.
+						SET launchLex["inclination"] TO _entity:ORBIT:INCLINATION.
+						SET launchLex["longitudeofascendingnode"] TO _entity:ORBIT:LONGITUDEOFASCENDINGNODE.
+						SET launchLex["argumentofperiapsis"] TO _entity:ORBIT:ARGUMENTOFPERIAPSIS.
+						SET launchLex["trueanomaly"] TO 0. //Not used anyways?
+					
+					RUNPATH("mission operations/main functions/launch.ks", launchLex).
 				}
 				//If neither of these conditions
 				ELSE {
-					RUNPATH("mission operations/main functions/launch.ks", orbitLex). //orbitLex or 0 (default), check in script
+					RUNPATH("mission operations/main functions/launch.ks", 0).
 				}
 			}			
 			SET STAGE_ID TO "ORBITING".
+
 			
 		//----------------------------------------------------\
 		//Execute any transfers-------------------------------|
