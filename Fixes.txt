@@ -1,0 +1,1 @@
+Line 88 Lambert.ks, did you add that SET synodicPeriod? Might want to remove it?

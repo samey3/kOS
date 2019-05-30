@@ -70,53 +70,67 @@ RUNONCEPATH("lib/processing.ks").
 	function lambert {
 	  //parameter s1.
 	  //parameter s2.
-	  parameter rv1.
-	  parameter rv2.
-	  parameter mu IS SHIP:BODY:MU.
-	  parameter allowLob is true.
-	  parameter optArrival is true.
-	  parameter startTime is time:seconds.
+		parameter rv1.
+		parameter rv2.
+		parameter mu IS SHIP:BODY:MU.
+		parameter allowLob is true.
+		parameter optArrival is true.
+		parameter startTime is time:seconds.
+		parameter endTime is 0.
   
-	  LOCAL kep1 IS eciVecsToKepElem(mu, rv1[0], rv1[1]).
-	  LOCAL kep2 IS eciVecsToKepElem(mu, rv2[0], rv2[1]). 
+		LOCAL kep1 IS eciVecsToKepElem(mu, rv1[0], rv1[1]).
+		LOCAL kep2 IS eciVecsToKepElem(mu, rv2[0], rv2[1]). 
 	  
-	  LOCAL period1 IS 2*CONSTANT():PI*SQRT((kep1[0]^3)/mu).
-	  LOCAL period2 IS 2*CONSTANT():PI*SQRT((kep2[0]^3)/mu).
+		LOCAL period1 IS 2*CONSTANT():PI*SQRT((kep1[0]^3)/mu).
+		LOCAL period2 IS 2*CONSTANT():PI*SQRT((kep2[0]^3)/mu).
 	    
-	  local synodicPeriod to 1 / abs((1 / period1) - (1 / period2)).
-		SET synodicPeriod TO 2*ETA:PERIAPSIS.
-	  local dtMin to 0.
-	  local dtMax to max(period1, period2). //Forcibly bound this, e.g. 3 years max? WRONG. This is travel time, must bound t inside the java app
+		local synodicPeriod to 1 / abs((1 / period1) - (1 / period2)).
+			SET synodicPeriod TO 2*ETA:PERIAPSIS. //Did I do this????
+		local dtMin to 0.
+		local dtMax to max(period1, period2). //Forcibly bound this, e.g. 3 years max? WRONG. This is travel time, must bound t inside the java app
 
-	  //local rv1 to getECIVecs(s1:orbit).
-	  //local rv2 to getECIVecs(s2:orbit).
+		//local rv1 to getECIVecs(s1:orbit).
+		//local rv2 to getECIVecs(s2:orbit).
 	  
-	  //local res to lambertOptimizeBounded(s1, s2, startTime, startTime + synodicPeriod, dtMin, dtMax, allowLob, optArrival).
-	  local res to lambertOptimizeBounded(rv1, rv2, mu, startTime, startTime + synodicPeriod, dtMin, dtMax, allowLob, optArrival).
+		//Perhaps cannot limit dtMin and dtMax though?
+		if(endTime = 0){
+			SET endTime TO (startTime + synodicPeriod). //time:sec + time to start + duration = end time
+		}
 	  
-	  return res.
+		//local res to lambertOptimizeBounded(s1, s2, startTime, startTime + synodicPeriod, dtMin, dtMax, allowLob, optArrival).
+		//local res to lambertOptimizeBounded(rv1, rv2, mu, startTime, startTime + synodicPeriod, dtMin, dtMax, allowLob, optArrival).
+		local res to lambertOptimizeBounded(rv1, rv2, mu, startTime, endTime, dtMin, dtMax, allowLob, optArrival).
+	  
+		return res.
 	}
 	
 	//Seems s1 and s2 are vessels/bodies
 	//Used for getting intercept
 	function lambert2 {
-	  parameter s1.
-	  parameter s2.
-	  parameter allowLob is true.
-	  parameter optArrival is true.
-	  parameter startTime is time:seconds.
+		parameter s1.
+		parameter s2.
+		parameter allowLob is true.
+		parameter optArrival is true.
+		parameter startTime is time:seconds.
+		parameter endTime is 0.
 	    
-	  local synodicPeriod to 1 / abs((1 / s1:period) - (1 / s2:period)).
-	  local dtMin to 0.
-	  local dtMax to max(s1:period, s2:period).
+		local synodicPeriod to 1 / abs((1 / s1:period) - (1 / s2:period)).
+		local dtMin to 0.
+		local dtMax to max(s1:period, s2:period).
 
-	  local rv1 to getECIVecs(s1).
-	  local rv2 to getECIVecs(s2).
+		local rv1 to getECIVecs(s1).
+		local rv2 to getECIVecs(s2).
 	  
-	  //local res to lambertOptimizeBounded(s1, s2, startTime, startTime + synodicPeriod, dtMin, dtMax, allowLob, optArrival).
-	  local res to lambertOptimizeBounded(rv1, rv2, s1:body:mu, startTime, startTime + synodicPeriod, dtMin, dtMax, allowLob, optArrival).
+		//Perhaps cannot limit dtMin and dtMax though?
+		if(endTime = 0){
+			SET endTime TO (startTime + synodicPeriod). //time:sec + time to start + duration = end time
+		}
 	  
-	  return res.
+		//local res to lambertOptimizeBounded(s1, s2, startTime, startTime + synodicPeriod, dtMin, dtMax, allowLob, optArrival).
+		//local res to lambertOptimizeBounded(rv1, rv2, s1:body:mu, startTime, startTime + synodicPeriod, dtMin, dtMax, allowLob, optArrival).
+		local res to lambertOptimizeBounded(rv1, rv2, s1:body:mu, startTime, endTime, dtMin, dtMax, allowLob, optArrival).
+	  
+		return res.
 	}
 
 	function lambertOptimizeBounded {
