@@ -182,12 +182,12 @@ RUNONCEPATH("lib/processing.ks").
 	  local dtStep to 2 * MIN_STEP_DT.
 
 	  // pure equality check is ok since these are assigned directly, not computed
-	  until tStep = MIN_STEP_T and dtStep = MIN_STEP_DT {
+	  //until tStep = MIN_STEP_T and dtStep = MIN_STEP_DT {
 		// do this at the beginning of the loop (after checking the until condition) so
 		// we loop at least once with tStep = dtStep = 1
 		set tStep to max(MIN_STEP_T, (tMax - tMin) / 10000).
 		set dtStep to max(MIN_STEP_DT, (dtMax - dtMin) / 500).
-
+		
 		set res to solveLambert(mu, //b:mu,
 								rv1[0], rv1[1],
 								rv2[0], rv2[1],
@@ -203,14 +203,14 @@ RUNONCEPATH("lib/processing.ks").
 
 		//set tStep to MIN_STEP_T.
 		//set dtStep to MIN_STEP_DT.
-	  }
+	  //}
 
 	  local calcEndTime to time:seconds.
-	  print "Calc end time: " + calcEndTime + " (total time: " + (calcEndTime - calcStartTime) + ")".
-	  print "answer from processing: " + res["t"].
+	  //print "Calc end time: " + calcEndTime + " (total time: " + (calcEndTime - calcStartTime) + ")".
+	  //print "answer from processing: " + res["t"].
 
 	  set res["t"] to res["t"] + calcStartTime.
-	  print "returning " + res["t"] + " (" + (res["t"] - time:seconds) + " from now)".
+	  //print "returning " + res["t"] + " (" + (res["t"] - time:seconds) + " from now)".
 
 	  return res.
 	}

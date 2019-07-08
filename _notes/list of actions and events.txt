@@ -1,0 +1,6 @@
+RCS block:
+	Actions:
+		toggle rcs thrust (enables/disables an RCS block)
+	Events:
+		show actuation toggles
+		change name tag

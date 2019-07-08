@@ -1,14 +1,16 @@
-	//SET vess TO VESSEL("vessel name").
-	//SET conn TO vess:CONNECTION.
-	
-	
-	
 	RUNONCEPATH("lib/eventListener.ks").
 	RUNONCEPATH("lib/config.ks").
-	
-	
-	
+
 	//Mission variables:
+		LOCAL orbitLex IS LEXICON().
+			//SET orbitLex["semimajoraxis"] TO 230000.
+			SET orbitLex["semimajoraxis"] TO 63000.
+			//SET orbitLex["semimajoraxis"] TO 350000.
+			SET orbitLex["eccentricity"] TO 0.
+			SET orbitLex["inclination"] TO 90.
+			SET orbitLex["longitudeofascendingnode"] TO 0.
+			SET orbitLex["argumentofperiapsis"] TO 0.
+			SET orbitLex["trueanomaly"] TO 60.
 	
 	//Mission staging:
 		//Liftoff
@@ -27,24 +29,9 @@
 		
 		//Fairing deploy
 		addEvent("KERBIN_LAUNCH_ALT_60000", "fairing", "deploy").
-		
-		
-		
-		addEvent("KERBIN_LAND_5", "parachute", "deploy").
-		
-		
-		//Deploy chutes
-		//Release bottom
-		//Release rover, activate engines
-		//--Suicide burn
-		//--event for surface touchdown immediately?
-		//Decouple
-
-
-		//Non-part events? e.g. set throttle
-		
-	
-	//Mission steps:
-	
+			
+	//Mission steps:	
 		configureVessel().
-		RUNPATH("operations/mission operations/missionBuilder.ks", DUNA, "land", LATLNG(0, -146.5116), 0).
+		//RUNPATH("operations/mission operations/missionBuilder.ks", IKE, "orbit", 0, orbitLex).
+		RUNPATH("operations/mission operations/missionBuilder.ks", GILLY, "orbit", 0, orbitLex).
+		//RUNPATH("operations/mission operations/missionBuilder.ks", MOHO, "orbit", 0, orbitLex).

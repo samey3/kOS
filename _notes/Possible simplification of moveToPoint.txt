@@ -1,0 +1,4 @@
+SHIP:CONTROL:TRANSLATION
+
+This looks interesting. Instead of controlling fore, starboard, and top individually, maybe able to just insert into this
+and it will deal with the calculations?

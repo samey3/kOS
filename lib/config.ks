@@ -3,7 +3,7 @@
 FUNCTION configureVessel {
 	PARAMETER _vesselName IS SHIP:NAME.
 
-	LOCAL configPath IS ("ship configs/" + _vesselName + ".ksc").
+	LOCAL configPath IS ("data/ship configs/" + _vesselName + ".ksc").
 
 	//If does not exist, creates config file with ship name
 	IF(VOLUME(0):EXISTS(configPath) = FALSE){

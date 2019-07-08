@@ -1,5 +1,6 @@
 
 LOCAL requestPath IS "lib/processing/requests/job_request.kr".
+LOCAL readyPath IS "lib/processing/requests/job_ready.kr".
 LOCAL resultPath IS  "lib/processing/requests/job_result.kr".
 LOCAL completePath IS  "lib/processing/requests/job_complete.kr".
 
@@ -51,6 +52,8 @@ FUNCTION lambertOptimize {
 		job:WRITELN("" + p_allowLob).
 		job:WRITELN("" + p_optArrival).
 		
+	//Creates the ready notification file
+	CREATE(readyPath).		
 		
 	//Waits until a result is returned
 	waitForResult().
@@ -60,7 +63,7 @@ FUNCTION lambertOptimize {
 	SET resLex TO READJSON(resultPath).
 	
 	//Cleans again
-	clean().
+	//clean().
 	
 	//Returns the result
 	RETURN resLex.
@@ -81,6 +84,9 @@ FUNCTION findPath {
 		job:WRITELN("" + SHIP:GEOPOSITION:LNG).
 		job:WRITELN("" + ABS(90 - endPosition:LAT)).
 		job:WRITELN("" + endPosition:LNG).
+		
+	//Creates the ready notification file
+	CREATE(readyPath).
 		
 	//Waits until a result is returned
 	waitForResult().		
@@ -111,6 +117,7 @@ FUNCTION findPath {
 //Cleans up the processing results
 FUNCTION clean {
   deletepath(requestPath).
+  deletepath(readyPath).
   deletepath(resultPath).
   deletepath(completePath).
 }

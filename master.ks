@@ -1,2 +1,22 @@
-//In here, we select from operation scenarios in a select screen.
-//Perhaps operation scenarios can also limit what crafts can be used?
+//--------------------------------------------------------------------------\
+//								 Imports					   				|
+//--------------------------------------------------------------------------/
+
+	
+
+//--------------------------------------------------------------------------\
+//								 Imports					   				|
+//--------------------------------------------------------------------------/
+
+
+	RUNONCEPATH("lib/scriptManagement.ks").	
+	RUNONCEPATH("lib/gui.ks").	
+	
+	
+//--------------------------------------------------------------------------\
+//								Program run					   				|
+//--------------------------------------------------------------------------/
+	
+	//Choose the scenario and run it
+	LOCAL chosenOperation IS showGUI("master").
+	RUNPATH("_operation scenarios/" + chosenOperation + ".ks").

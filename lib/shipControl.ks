@@ -1,63 +1,4 @@
 //--------------------------------------------------------------------------\
-//								Auto-staging				   				|
-//--------------------------------------------------------------------------/
-
-
-	//This can likely be converted to be used on the main processor
-	FUNCTION autoStaging {
-		//Can also use a ship config and a list of id's to check and use the ACTUAL stage function.
-
-		//----------------------------------------------------\
-		//Parameters and variables----------------------------|
-			PARAMETER _state.
-			LOCAL LOCK SENTINEL TO _state.
-			LOCAL stage_id IS "".
-			
-			IF(_state){ PRINT("Auto stage : ENABLED"). }
-			ELSE { PRINT("Auto stage : DISABLED"). }
-
-		//----------------------------------------------------\
-		//Enable reading of stage IDs-------------------------|
-			ON(CORE:MESSAGES:LENGTH){
-				IF(CORE:MESSAGES:EMPTY() = FALSE AND SENTINEL){
-					UNTIL(CORE:MESSAGES:EMPTY()){
-
-						//#######################################################################
-						//# 					Read in a received stage-id						#
-						//#######################################################################
-						
-						
-							SET stage_id TO CORE:MESSAGES:POP():CONTENT.
-							PRINT("STAGE : " + stage_id).
-						
-						
-						//#######################################################################
-						//# 				 Iterate over parts to find tagged					#
-						//#######################################################################
-						
-											
-							FOR stagePart IN SHIP:PARTSTAGGED(stage_id){
-								//If it is a decoupler
-								IF(stagePart:HASMODULE("ModuleDecouple")){
-									stagePart:GETMODULE("ModuleDecouple"):DOACTION("DECOUPLE", TRUE).
-								}
-								//If it is an engine
-								IF(stagePart:HASMODULE("ModuleEngines")){
-									stagePart:ACTIVATE.
-								}
-								//If it is a parachute
-								IF(stagePart:HASMODULE("ModuleParachute")){
-									stagePart:GETMODULE("ModuleParachute"):DOACTION("deploy chute", TRUE).
-								}
-							}	
-					}
-				}
-				RETURN _state.
-			}	
-	}
-
-
-//--------------------------------------------------------------------------\
 //							Adaptive lighting				   				|
 //--------------------------------------------------------------------------/
 
@@ -189,7 +130,9 @@
 		LOCAL dist IS _craft:BODY:RADIUS - ((_craft:POSITION - _craft:BODY:POSITION):MAG - vesHeight).
 
 		//If above sea-level, return 0
-		IF(dist <= 0){ RETURN 0. }
-		ELSE { RETURN dist. }
+		//IF(dist <= 0){ RETURN 0. }
+		//ELSE { RETURN dist. }
+		
+		RETURN dist.
 	}
 
