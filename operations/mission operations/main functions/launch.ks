@@ -185,14 +185,14 @@
 			
 		//Execute the maneuvers
 		//throwEvent(SHIP:BODY:NAME + "_LAUNCH_CIRC1").
-		//RUNPATH("mission operations/basic functions/executeNode.ks", NODE(res["t"], res["radial_1"], res["normal_1"], res["prograde_1"])).
+		//RUNPATH("operations/mission operations/basic functions/executeNode.ks", NODE(res["t"], res["radial_1"], res["normal_1"], res["prograde_1"])).
 		//throwEvent(SHIP:BODY:NAME + "_LAUNCH_CIRC2").
-		//RUNPATH("mission operations/basic functions/executeNode.ks", NODE(res["t"] + res["dt"], res["radial_2"], res["normal_2"], res["prograde_2"])).
+		//RUNPATH("operations/mission operations/basic functions/executeNode.ks", NODE(res["t"] + res["dt"], res["radial_2"], res["normal_2"], res["prograde_2"])).
 		
 		//Switches because the above gives issues with the true anomaly currently
 		throwEvent(SHIP:BODY:NAME + "_LAUNCH_CIRC").
 		LOCAL progradeChange IS SQRT(SHIP:BODY:MU/(SHIP:ORBIT:APOAPSIS + SHIP:BODY:RADIUS)) - VELOCITYAT(SHIP, TIME:SECONDS + ETA:APOAPSIS):ORBIT:MAG.
-		RUNPATH("mission operations/basic functions/executeNode.ks", NODE(TIME:SECONDS + ETA:APOAPSIS, 0, 0, progradeChange)).
+		RUNPATH("operations/mission operations/basic functions/executeNode.ks", NODE(TIME:SECONDS + ETA:APOAPSIS, 0, 0, progradeChange)).
 		LOCK THROTTLE TO 0.
 		
 		

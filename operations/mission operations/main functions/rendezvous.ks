@@ -24,7 +24,7 @@
 
 
 	//Refine orbit until matching
-	RUNPATH("mission operations/intermediate functions/setOrbit.ks", _entity, TRUE, TRUE). //Match true anomaly, refine until acceptable
+	RUNPATH("operations/mission operations/intermediate functions/setOrbit.ks", _entity, TRUE, TRUE). //Match true anomaly, refine until acceptable
 	
 	//----------------------------------------------------\
 	//Iterate the time to find closest approach-----------|	

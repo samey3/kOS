@@ -33,7 +33,7 @@
 	//Perform the burn
 		throwEvent(SHIP:BODY:NAME + "_EJECT_START").
 		LOCAL resNode IS nodeFromDesiredVector(maneuverTime, r_velocity).
-		RUNPATH("mission operations/basic functions/executeNode.ks", resNode).		
+		RUNPATH("operations/mission operations/basic functions/executeNode.ks", resNode).		
 		throwEvent(SHIP:BODY:NAME + "_EJECT_COAST").
 		
 	//Warps to the ejection

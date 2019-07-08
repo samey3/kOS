@@ -27,7 +27,7 @@
 	//----------------------------------------------------\
 	//Perform the intercept burn--------------------------|
 		throwEvent(SHIP:BODY:NAME + "_INJECT_START").
-		RUNPATH("mission operations/intermediate functions/setOrbit.ks", _body, TRUE, FALSE, TRUE).
+		RUNPATH("operations/mission operations/intermediate functions/setOrbit.ks", _body, TRUE, FALSE, TRUE).
 		throwEvent(SHIP:BODY:NAME + "_INJECT_COAST").
 
 		//setOrbit will warp until it has a patch
@@ -57,7 +57,7 @@
 		LOCAL r_velocity IS (positionVector:NORMALIZED*vel)*ANGLEAXIS(-(90 - ABS(fpa)), axis).
 	
 		LOCAL resNode IS nodeFromDesiredVector(maneuverTime, r_velocity).
-		RUNPATH("mission operations/basic functions/executeNode.ks", resNode).
+		RUNPATH("operations/mission operations/basic functions/executeNode.ks", resNode).
 		throwEvent(SHIP:BODY:NAME + "_INJECT_ADJUST").
 		
 		//Now perform the capture burn
@@ -65,7 +65,7 @@
 		SET r_velocity TO r_speed*VELOCITYAT(SHIP, TIME:SECONDS + ETA:PERIAPSIS):ORBIT:NORMALIZED.
 	
 		SET resNode TO nodeFromDesiredVector(TIME:SECONDS + ETA:PERIAPSIS, r_velocity).
-		RUNPATH("mission operations/basic functions/executeNode.ks", resNode).
+		RUNPATH("operations/mission operations/basic functions/executeNode.ks", resNode).
 		throwEvent(SHIP:BODY:NAME + "_INJECT_CAPTURED").
 	
 	

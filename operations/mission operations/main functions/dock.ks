@@ -87,7 +87,7 @@ CLEARSCREEN.
 	//---------------------------------\
 	//Move to 100m---------------------|
 	IF((SHIP:POSITION - _targetCraft:POSITION):MAG < standOffDistance){
-		RUNPATH("mission operations/basic functions/moveToPoint.ks", _targetCraft, (SHIP:POSITION - _targetCraft:POSITION):NORMALIZED*standOffDistance, 0).
+		RUNPATH("operations/mission operations/basic functions/moveToPoint.ks", _targetCraft, (SHIP:POSITION - _targetCraft:POSITION):NORMALIZED*standOffDistance, 0).
 	}
 	
 	
@@ -117,13 +117,13 @@ CLEARSCREEN.
 	
 	//---------------------------------\
 	//Move to 100m from port-----------|
-	RUNPATH("mission operations/basic functions/moveToPoint.ks", targ_port, targ_port:FACING:VECTOR*100, 0).	
-	RUNPATH("mission operations/basic functions/moveToPoint.ks", targ_port, targ_port:FACING:VECTOR*100, 0). //Does it again to correct any error distance
+	RUNPATH("operations/mission operations/basic functions/moveToPoint.ks", targ_port, targ_port:FACING:VECTOR*100, 0).	
+	RUNPATH("operations/mission operations/basic functions/moveToPoint.ks", targ_port, targ_port:FACING:VECTOR*100, 0). //Does it again to correct any error distance
 	
 	
 	//---------------------------------\
 	//Dock-----------------------------|
-	RUNPATH("mission operations/basic functions/moveToPoint.ks", targ_port, targ_port:FACING:VECTOR*3, 1).
+	RUNPATH("operations/mission operations/basic functions/moveToPoint.ks", targ_port, targ_port:FACING:VECTOR*3, 1).
 	
 	
 	PRINT("Docking completed.").

@@ -15,7 +15,7 @@
 //--------------------------------------------------------------------------/
 
 
-	RUNPATH("mission operations/intermediate functions/setOrbit.ks", _orbitLex, FALSE, TRUE). //Don't match true anomaly, refine until acceptable
+	RUNPATH("operations/mission operations/intermediate functions/setOrbit.ks", _orbitLex, FALSE, TRUE). //Don't match true anomaly, refine until acceptable
 	
 	
 	
