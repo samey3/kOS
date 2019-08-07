@@ -1,13 +1,12 @@
-//Basically just replace all parameters with _parameterLex. Makes everything a bit cleaner for passing in?
-//Plus, can pass in additional fields easily, e.g. port-tag to dock to
-
-
 //--------------------------------------------------------------------------\
 //								Parameters					   				|
 //--------------------------------------------------------------------------/
 
 
-	PARAMETER _parameterLex IS LEXICON().
+	PARAMETER _entity IS 0.
+	PARAMETER _action IS 0.
+	PARAMETER _landCoordinates IS 0.
+	PARAMETER _orbitLex IS 0.
 
 
 //--------------------------------------------------------------------------\
@@ -20,6 +19,21 @@
 	RUNONCEPATH("lib/gui.ks").
 	RUNONCEPATH("lib/eventListener.ks").	
 
+
+//--------------------------------------------------------------------------\
+//							 Reboot conditions					   			|
+//--------------------------------------------------------------------------/
+
+
+	IF(_entity <> 0){
+		IF((_action = "orbit" AND _orbitLex = 0)	//OR (_action = "land" AND _landCoordinates = 0)
+		){
+			PRINT ("Operation conditions not met ( " + SCRIPTPATH():NAME + " ).").
+			PRINT ("Rebooting. . ."). 
+			WAIT 3. REBOOT.
+		}
+	}
+
 	
 //--------------------------------------------------------------------------\
 //								Variables					   				|
@@ -27,8 +41,12 @@
 
 
 	//If no parameters were set, query the user for the operation parameters
-	IF(_parameterLex:HASKEY("entity") = FALSE OR _parameterLex:HASKEY("action") = FALSE){ 
-		SET _parameterLex TO showGUI("build_mission").
+	IF(_entity = 0){ 
+		LOCAL res IS showGUI("build_mission").
+		SET _entity TO res["entity"].
+		SET _action TO res["action"].
+		SET _landCoordinates TO res["landingcoordinates"].
+		SET _orbitLex TO res["orbitparameters"].
 	}
 	
 	//If docking, holds the distance between the ship and entity when deciding if to rendezvous
@@ -38,8 +56,8 @@
 	//Gets the entity bodies
 	LOCAL b1 IS SHIP:BODY.
 	LOCAL b2 IS 0.
-		IF(_parameterLex["entity"]:ISTYPE("vessel")){ SET b2 TO _parameterLex["entity"]:BODY. }
-		ELSE IF(_parameterLex["entity"]:ISTYPE("body")){ SET b2 TO _parameterLex["entity"]. }	
+		IF(_entity:ISTYPE("vessel")){ SET b2 TO _entity:BODY. }
+		ELSE IF(_entity:ISTYPE("body")){ SET b2 TO _entity. }	
 		
 		
 	//Creates stacks for transfers
@@ -50,9 +68,6 @@
 	
 	//Path to follow for mission builder scripts
 	LOCAL basePath IS "operations/mission operations/".
-	
-	//Initialize any basic required parameters if not set
-	IF(_parameterLex:HASKEY("landingcoordinates") = FALSE){ SET _parameterLex["landingcoordinates"] TO 0. }
 
 
 //--------------------------------------------------------------------------\
@@ -102,38 +117,38 @@
 		
 		PRINT("Mission builder V1.0").
 		PRINT("--------------------").
-		IF(SHIP:STATUS <> "ORBITING" AND NOT _parameterLex["action"] = "nothing"){ PRINT("* Launch"). }
+		IF(SHIP:STATUS <> "ORBITING" AND NOT _action = "nothing"){ PRINT("* Launch"). }
 		LOCAL transfersCopy IS transfers:COPY().
 		LOCAL lastBody IS SHIP:BODY.
 		UNTIL(transfersCopy:EMPTY()){
 			PRINT("* Transfer : " + lastBody:NAME:PADLEFT(6) + " -> " + transfersCopy:PEEK():NAME).
 			SET lastBody TO transfersCopy:POP().
 		}
-		IF(_parameterLex["action"] = "land"){
+		IF(_action = "land"){
 			PRINT("* Land").
-			PRINT("  |->Location : " + _parameterLex["landingcoordinates"]).
+			PRINT("  |->Location : " + _landCoordinates).
 		}
-		ELSE IF(_parameterLex["action"] = "rendezvous"){
+		ELSE IF(_action = "rendezvous"){
 			PRINT("* Rendezvous").
-			PRINT("  |->Object : " + _parameterLex["entity"]).
+			PRINT("  |->Object : " + _entity).
 		}
-		ELSE IF(_parameterLex["action"] = "dock"){
-			SET entityDistance TO (SHIP:POSITION - _parameterLex["entity"]:POSITION):MAG.
+		ELSE IF(_action = "dock"){
+			SET entityDistance TO (SHIP:POSITION - _entity:POSITION):MAG.
 			//If distance > 1km, rendezvous
 			IF(entityDistance > rendezvousDistance){
 				PRINT("* Rendezvous").
-				PRINT("  |->Object : " + _parameterLex["entity"]).
+				PRINT("  |->Object : " + _entity).
 			}			
 			PRINT("* Dock").
-			PRINT("  |->Vessel : " + _parameterLex["entity"]).
+			PRINT("  |->Vessel : " + _entity).
 		}
-		ELSE IF(_parameterLex["action"] = "orbit"){
+		ELSE IF(_action = "orbit"){
 			PRINT("* Orbit").
-			PRINT("  |->Semi-Major Axis":PADRIGHT(20) + " : " + _parameterLex["semimajoraxis"]).
-			PRINT("  |->Eccentricity":PADRIGHT(20) + " : " + _parameterLex["eccentricity"]).
-			PRINT("  |->Inclination":PADRIGHT(20) + " : " + _parameterLex["inclination"]).
-			PRINT("  |->LAN":PADRIGHT(20) + " : " + _parameterLex["longitudeofascendingnode"]).
-			PRINT("  |->Argument of":PADRIGHT(20) + " : " + _parameterLex["argumentofperiapsis"]).
+			PRINT("  |->Semi-Major Axis":PADRIGHT(20) + " : " + _orbitLex["semimajoraxis"]).
+			PRINT("  |->Eccentricity":PADRIGHT(20) + " : " + _orbitLex["eccentricity"]).
+			PRINT("  |->Inclination":PADRIGHT(20) + " : " + _orbitLex["inclination"]).
+			PRINT("  |->LAN":PADRIGHT(20) + " : " + _orbitLex["longitudeofascendingnode"]).
+			PRINT("  |->Argument of":PADRIGHT(20) + " : " + _orbitLex["argumentofperiapsis"]).
 			PRINT("periapsis":PADLEFT(14)).
 		}
 		PRINT(" ").
@@ -149,23 +164,23 @@
 		//Launch to orbit if required-------------------------|
 			//Must check this beforehand since kOS does not support short-circuiting
 			LOCAL sharesSameBody IS FALSE.
-			IF(_parameterLex["entity"]:HASBODY){
-				IF(_parameterLex["entity"]:BODY = SHIP:BODY){ SET sharesSameBody TO TRUE. }
+			IF(_entity:HASBODY){
+				IF(_entity:BODY = SHIP:BODY){ SET sharesSameBody TO TRUE. }
 			}
-
+			
 			//Checks conditions and launches appropriately
-			IF((SHIP:STATUS = "LANDED" OR SHIP:STATUS = "SPLASHED" OR SHIP:STATUS = "PRELAUNCH") AND NOT (_parameterLex["action"] = "nothing")){
+			IF((SHIP:STATUS = "LANDED" OR SHIP:STATUS = "SPLASHED" OR SHIP:STATUS = "PRELAUNCH") AND NOT _action = "nothing"){
 				throwEvent(SHIP:BODY:NAME + "_PRELAUNCH").
-				
+
 				//If the entity is the body the ship is launching from
-				IF(_parameterLex["entity"] = SHIP:BODY){
+				IF(_entity = SHIP:BODY){
 					//If not landing, use the orbitLex
-					IF(NOT (_parameterLex["action"] = "land")){
-						RUNPATH(basePath + "main functions/launch.ks", _parameterLex).
+					IF(NOT (_action = "land")){
+						RUNPATH(basePath + "main functions/launch.ks", _orbitLex).
 					}
 					//If landing, convert the geocoordinates to some kind of lex
 					ELSE {
-						RUNPATH(basePath + "main functions/launch.ks", _parameterLex).
+						RUNPATH(basePath + "main functions/launch.ks", _landCoordinates).
 					}
 					
 				}
@@ -175,9 +190,9 @@
 					LOCAL launchLex IS LEXICON().
 						SET launchLex["semimajoraxis"] TO 0.
 						SET launchLex["eccentricity"] TO 0.
-						SET launchLex["inclination"] TO _parameterLex["entity"]:ORBIT:INCLINATION.
-						SET launchLex["longitudeofascendingnode"] TO _parameterLex["entity"]:ORBIT:LONGITUDEOFASCENDINGNODE.
-						SET launchLex["argumentofperiapsis"] TO _parameterLex["entity"]:ORBIT:ARGUMENTOFPERIAPSIS.
+						SET launchLex["inclination"] TO _entity:ORBIT:INCLINATION.
+						SET launchLex["longitudeofascendingnode"] TO _entity:ORBIT:LONGITUDEOFASCENDINGNODE.
+						SET launchLex["argumentofperiapsis"] TO _entity:ORBIT:ARGUMENTOFPERIAPSIS.
 						SET launchLex["trueanomaly"] TO 0. //Not used anyways?
 					
 					RUNPATH(basePath + "main functions/launch.ks", launchLex).
@@ -186,7 +201,7 @@
 				ELSE {
 					RUNPATH(basePath + "main functions/launch.ks", 0).
 				}
-			}	
+			}			
 			throwEvent(SHIP:BODY:NAME + "_ORBITING").
 
 			
@@ -214,27 +229,26 @@
 		
 		//----------------------------------------------------\
 		//Perform the final operation-------------------------|
-			IF(_parameterLex["action"] = "land"){
-				RUNPATH(basePath + "main functions/land.ks", _parameterLex). //May be geoposition or vessel
+			IF(_action = "land"){
+				RUNPATH(basePath + "main functions/land.ks", _landCoordinates). //May be geoposition or vessel
 			}
-			ELSE IF(_parameterLex["action"] = "rendezvous"){
-				RUNPATH(basePath + "main functions/rendezvous.ks", _parameterLex).
+			ELSE IF(_action = "rendezvous"){
+				RUNPATH(basePath + "main functions/rendezvous.ks", _entity).
 			}
-			ELSE IF(_parameterLex["action"] = "dock"){
+			ELSE IF(_action = "dock"){
 				//If distance > 1km, rendezvous
 				IF(entityDistance > rendezvousDistance){
-					RUNPATH(basePath + "main functions/rendezvous.ks", _parameterLex).
+					RUNPATH(basePath + "main functions/rendezvous.ks", _entity).
 				}	
-				RUNPATH(basePath + "main functions/dock.ks", _parameterLex).
+				RUNPATH(basePath + "main functions/dock.ks", _entity).
 			}
-			ELSE IF(_parameterLex["action"] = "orbit"){
-				RUNPATH(basePath + "main functions/orbit.ks", _parameterLex).
+			ELSE IF(_action = "orbit"){
+				RUNPATH(basePath + "main functions/orbit.ks", _orbitLex).
 			}
-			ELSE IF(_parameterLex["action"] = "launch"){
+			ELSE IF(_action = "launch"){
 				//Nothing here. This is here just to notify of the last option.
 				//Basically just launches to (an optionally specified) orbit.
 				//Launch uses orbitLex
-				RUNPATH(basePath + "main functions/launch.ks", _parameterLex). //Will this work? Currently untested
 			}
 		
 		throwEvent(SHIP:BODY:NAME + "_FINISHED").

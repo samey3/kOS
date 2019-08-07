@@ -1,3 +1,5 @@
+//Move adaptive lighting and panels to an autonomous script perhaps?
+
 //--------------------------------------------------------------------------\
 //							Adaptive lighting				   				|
 //--------------------------------------------------------------------------/
@@ -91,6 +93,10 @@
 //--------------------------------------------------------------------------/	
 
 
+	//How about we just use vessel bounds here?
+	//https://ksp-kos.github.io/KOS/structures/vessels/bounds.html#structure:BOUNDS
+	
+
 	//Finds the dimensions of the vessel (lower, upper, total)
 	FUNCTION vesselHeight {
 		PARAMETER _craft.
@@ -136,3 +142,110 @@
 		RETURN dist.
 	}
 
+	
+//--------------------------------------------------------------------------\
+//								Vessel axial RCS			   				|
+//--------------------------------------------------------------------------/	
+
+
+	//Get the total RCS thrust per ship-centered axis
+	//Can thrust the axial amount IN THAT DIRECTION (opposite way that the RCS port faces)
+	FUNCTION getRCSThrustAxis {
+		//Lexicon to hold the axial thrust values
+		LOCAL axlThr IS LEXICON().
+			SET axlThr["px"] TO 0.
+			SET axlThr["nx"] TO 0.
+			SET axlThr["py"] TO 0.
+			SET axlThr["ny"] TO 0.
+			SET axlThr["pz"] TO 0.
+			SET axlThr["nz"] TO 0.
+		
+		//4-thruster block, 1Kn of thrust
+		FOR p IN SHIP:PARTSNAMED("RCSBlock.v2") {
+			//Get the block's forevector axis
+			SET axlThr["px"] TO axlThr["px"] + ABS(SHIP:FACING:FOREVECTOR*(p:FACING:FOREVECTOR*1)).
+			SET axlThr["nx"] TO axlThr["nx"] + ABS(SHIP:FACING:FOREVECTOR*(p:FACING:FOREVECTOR*1)).			
+			SET axlThr["py"] TO axlThr["py"] + ABS(SHIP:FACING:TOPVECTOR*(p:FACING:FOREVECTOR*1)).
+			SET axlThr["ny"] TO axlThr["ny"] + ABS(SHIP:FACING:TOPVECTOR*(p:FACING:FOREVECTOR*1)).		
+			SET axlThr["pz"] TO axlThr["pz"] + ABS(SHIP:FACING:STARVECTOR*(p:FACING:FOREVECTOR*1)).
+			SET axlThr["nz"] TO axlThr["nz"] + ABS(SHIP:FACING:STARVECTOR*(p:FACING:FOREVECTOR*1)).
+		
+			//Get the block's topvector axis
+			SET axlThr["px"] TO axlThr["px"] + ABS(SHIP:FACING:FOREVECTOR*(p:FACING:TOPVECTOR*1)).
+			SET axlThr["nx"] TO axlThr["nx"] + ABS(SHIP:FACING:FOREVECTOR*(p:FACING:TOPVECTOR*1)).			
+			SET axlThr["py"] TO axlThr["py"] + ABS(SHIP:FACING:TOPVECTOR*(p:FACING:TOPVECTOR*1)).
+			SET axlThr["ny"] TO axlThr["ny"] + ABS(SHIP:FACING:TOPVECTOR*(p:FACING:TOPVECTOR*1)).		
+			SET axlThr["pz"] TO axlThr["pz"] + ABS(SHIP:FACING:STARVECTOR*(p:FACING:TOPVECTOR*1)).
+			SET axlThr["nz"] TO axlThr["nz"] + ABS(SHIP:FACING:STARVECTOR*(p:FACING:TOPVECTOR*1)).			
+		}
+		
+		//1-thruster block, 1Kn of thrust
+		FOR p IN SHIP:PARTSNAMED("linearRcs") {
+			//Get the block's forevector axis
+			//X-axis
+			IF(VANG(SHIP:FACING:FOREVECTOR, p:FACING:FOREVECTOR) < 90){ 
+				SET axlThr["nx"] TO axlThr["nx"] + SHIP:FACING:FOREVECTOR*(p:FACING:FOREVECTOR*1). }
+			ELSE{
+				SET axlThr["px"] TO axlThr["px"] - SHIP:FACING:FOREVECTOR*(p:FACING:FOREVECTOR*1). }
+			
+			//Y-axis
+			IF(VANG(SHIP:FACING:TOPVECTOR, p:FACING:FOREVECTOR) < 90){ 
+				SET axlThr["ny"] TO axlThr["ny"] + SHIP:FACING:TOPVECTOR*(p:FACING:FOREVECTOR*1). }
+			ELSE{
+				SET axlThr["py"] TO axlThr["py"] - SHIP:FACING:TOPVECTOR*(p:FACING:FOREVECTOR*1). }
+			
+			//Z-axis
+			IF(VANG(SHIP:FACING:STARVECTOR, p:FACING:FOREVECTOR) < 90){ 
+				SET axlThr["nz"] TO axlThr["nz"] + SHIP:FACING:STARVECTOR*(p:FACING:FOREVECTOR*1). }
+			ELSE{
+				SET axlThr["pz"] TO axlThr["pz"] - SHIP:FACING:STARVECTOR*(p:FACING:FOREVECTOR*1). }		
+		}
+
+		//1-thruster block, 12Kn of thrust
+		FOR p IN SHIP:PARTSNAMED("vernierEngine") {
+			//Get the block's negative starvector axis
+			//X-axis
+			IF(VANG(SHIP:FACING:FOREVECTOR, -p:FACING:STARVECTOR) < 90){ 
+				SET axlThr["nx"] TO axlThr["nx"] + SHIP:FACING:FOREVECTOR*(-p:FACING:STARVECTOR*12). }
+			ELSE{
+				SET axlThr["px"] TO axlThr["px"] - SHIP:FACING:FOREVECTOR*(-p:FACING:STARVECTOR*12). }
+			
+			//Y-axis
+			IF(VANG(SHIP:FACING:TOPVECTOR, -p:FACING:FOREVECTOR) < 90){ 
+				SET axlThr["ny"] TO axlThr["ny"] + SHIP:FACING:TOPVECTOR*(-p:FACING:STARVECTOR*12). }
+			ELSE{
+				SET axlThr["py"] TO axlThr["py"] - SHIP:FACING:TOPVECTOR*(-p:FACING:STARVECTOR*12). }
+			
+			//Z-axis
+			IF(VANG(SHIP:FACING:STARVECTOR, -p:FACING:FOREVECTOR) < 90){ 
+				SET axlThr["nz"] TO axlThr["nz"] + SHIP:FACING:STARVECTOR*(-p:FACING:STARVECTOR*12). }
+			ELSE{
+				SET axlThr["pz"] TO axlThr["pz"] - SHIP:FACING:STARVECTOR*(-p:FACING:STARVECTOR*12). }		
+		}
+
+		//Return the lexicon
+		RETURN axlThr.
+	}
+	
+	
+//--------------------------------------------------------------------------\
+//								Part highlighting			   				|
+//--------------------------------------------------------------------------/
+
+
+
+	FUNCTION highlightPart {
+		PARAMETER _pl.
+		PARAMETER _colour.	
+		IF(_pl:ISTYPE("list")){ FOR p IN _pl { HIGHLIGHT(p, _colour). } }
+		ELSE{ HIGHLIGHT(_pl, _colour). }
+	}
+	
+	FUNCTION removeHighlight {
+		SET HIGHLIGHT(s_ports, RED):ENABLED TO FALSE.
+		SET HIGHLIGHT(t_ports, RED):ENABLED TO FALSE.
+		
+		PARAMETER _pl.
+		IF(_pl:ISTYPE("list")){ FOR p IN _pl { SET HIGHLIGHT(p, RED):ENABLED TO FALSE. } }
+		ELSE{ SET HIGHLIGHT(_pl, RED):ENABLED TO FALSE. }
+	}

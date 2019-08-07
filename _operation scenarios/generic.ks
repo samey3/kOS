@@ -1,10 +1,6 @@
 	RUNONCEPATH("lib/eventListener.ks").
 	RUNONCEPATH("lib/config.ks").
 	
-	
-	
-			
-	
 	//Variables
 		LOCAL parameterLex IS LEXICON().
 			//Basic parameters
@@ -21,12 +17,12 @@
 			SET parameterLex["interceptaltitude"] TO 0.
 			
 			//Orbiting/launching
-			SET parameterLex["semimajoraxis"] TO 1000750.
-			SET parameterLex["eccentricity"] TO 0.60.
-			SET parameterLex["inclination"] TO 85.
-			SET parameterLex["longitudeofascendingnode"] TO 30.
-			SET parameterLex["argumentofperiapsis"] TO 20.
-			SET parameterLex["trueanomaly"] TO 60.
+			SET parameterLex["semimajoraxis"] TO KERBIN:BODY:RADIUS + 100000.
+			SET parameterLex["eccentricity"] TO 0.
+			SET parameterLex["inclination"] TO 0.
+			SET parameterLex["longitudeofascendingnode"] TO 0.
+			SET parameterLex["argumentofperiapsis"] TO 0.
+			SET parameterLex["trueanomaly"] TO 0.
 	
 	//Custom events
 		//ON(){

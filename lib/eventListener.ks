@@ -43,10 +43,6 @@
 	FUNCTION handleEvent{
 		PARAMETER _eventName.
 		
-				
-		PRINT("Event : " + _eventName).
-		WAIT 2.
-		
 		//For each listener in the list	
 		FROM {LOCAL i IS listenerList:LENGTH-1.} UNTIL (i < 0) STEP {SET i TO i-1.} DO {			
 			//If it matches the event name

@@ -1,0 +1,4 @@
+The base scripts need to be runnable off of a boot script. They may then call the appropriate scenario file?
+and in there will contain the event listeners that will call the baseBuilder script stuff.
+
+MUST always be turned on via boot script, call base file by vessel name.

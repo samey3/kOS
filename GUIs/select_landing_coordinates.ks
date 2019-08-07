@@ -2,7 +2,7 @@
 	FUNCTION selectCoordinates {	
 		LOCAL chosenCoordinates IS 0.
 		LOCAL landOnTop IS TRUE.
-		LOCAL dataPath IS "Data/Saved coordinates/" + SHIP:BODY:NAME + ".txt".
+		LOCAL dataPath IS "data/Saved coordinates/" + SHIP:BODY:NAME + ".txt".
 		
 		LOCAL gui IS GUI(800,140).	
 		LOCAL titleLabel IS gui:ADDLABEL("Select landing location").

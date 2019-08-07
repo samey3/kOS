@@ -3,12 +3,24 @@
 	
 
 //--------------------------------------------------------------------------\
-//								Parameters					   				|
+//								 Parameters					   				|
 //--------------------------------------------------------------------------/
 
 
-	PARAMETER _landCoordinates.
+	PARAMETER _parameterLex.
+	
 
+//--------------------------------------------------------------------------\
+//								 Variables					   				|
+//--------------------------------------------------------------------------/
+
+
+	//Lexicon extraction
+	LOCAL landingCoordinates IS 0.
+		IF(_parameterLex:HASKEY("landingcoordinates")){ SET landingCoordinates TO _parameterLex["landingcoordinates"]. }
+	LOCAL interceptAltitude IS (SHIP:BODY:RADIUS - 50000).
+		IF(_parameterLex:HASKEY("interceptaltitude")){ SET interceptAltitude TO _parameterLex["interceptaltitude"]. }
+	
 	
 //--------------------------------------------------------------------------\
 //								Program run					   				|
@@ -24,7 +36,7 @@
 	//----------------------------------------------------\
 	//Execute the landing script--------------------------|
 		throwEvent(SHIP:BODY:NAME + "_LAND_START").
-		RUNPATH("operations/mission operations/intermediate functions/land.ks", _landCoordinates). //Second parameter is periapsis from body center
+		RUNPATH("operations/mission operations/intermediate functions/land.ks", landingCoordinates, interceptAltitude). //Second parameter is periapsis from body center
 
 		
 	throwEvent(SHIP:BODY:NAME + "_LAND_COMPLETE").

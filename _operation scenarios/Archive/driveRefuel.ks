@@ -19,7 +19,7 @@
 		addListener("BATTERIES_DEPLETED", {
 			FUELCELLS ON.
 			BRAKES ON.
-			UNTIL((SHIP:ELECTRICCHARGE/electricCapacity) >= 0.15){
+			UNTIL((SHIP:ELECTRICCHARGE/electricCapacity) >= 0.45){
 				CLEARSCREEN.
 				PRINT("Recharging batteries...").
 				PRINT("Charge : " + (SHIP:ELECTRICCHARGE/electricCapacity) + "%").

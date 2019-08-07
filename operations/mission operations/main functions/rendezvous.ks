@@ -7,7 +7,7 @@
 //--------------------------------------------------------------------------/
 
 
-	PARAMETER _entity.
+	PARAMETER _parameterLex.
 		
 	
 //--------------------------------------------------------------------------\
@@ -24,11 +24,11 @@
 
 
 	//Refine orbit until matching
-	RUNPATH("operations/mission operations/intermediate functions/setOrbit.ks", _entity, TRUE, TRUE). //Match true anomaly, refine until acceptable
+	RUNPATH("operations/mission operations/intermediate functions/setOrbit.ks", _parameterLex["entity"], TRUE, TRUE). //Match true anomaly, refine until acceptable
 	
 	//----------------------------------------------------\
 	//Iterate the time to find closest approach-----------|	
-		LOCAL lowestSep IS (SHIP:POSITION - _entity:POSITION):MAG.
+		LOCAL lowestSep IS (SHIP:POSITION - _parameterLex["entity"]:POSITION):MAG.
 		LOCAL sepDist IS 0.
 		LOCAL valuePasses IS 0.
 		LOCAL lastDir IS "increase".
@@ -36,23 +36,23 @@
 		UNTIL (valuePasses > 20) {
 			//Does the next increment
 			IF(lastDir = "increase"){
-				SET timeShift TO timeShift + (_entity:ORBIT:PERIOD/10)/2^valuePasses. }
+				SET timeShift TO timeShift + (_parameterLex["entity"]:ORBIT:PERIOD/10)/2^valuePasses. }
 			ELSE {
-				SET timeShift TO timeShift - (_entity:ORBIT:PERIOD/10)/2^valuePasses. }
+				SET timeShift TO timeShift - (_parameterLex["entity"]:ORBIT:PERIOD/10)/2^valuePasses. }
 			
 			//Finds the separation distance
-			SET sepDist TO (POSITIONAT(SHIP, TIME:SECONDS + timeShift) - POSITIONAT(_entity, TIME:SECONDS + timeShift)):MAG.
+			SET sepDist TO (POSITIONAT(SHIP, TIME:SECONDS + timeShift) - POSITIONAT(_parameterLex["entity"], TIME:SECONDS + timeShift)):MAG.
 			
 			//If farther, reverse direction and make smaller increments
 			IF((sepDist > lowestSep AND valuePasses > 0) OR (timeShift > SHIP:ORBIT:PERIOD)){	
 				//Reverse direction
 				IF lastDir = "decrease" {
 					SET lastDir TO "increase". 
-					SET timeShift TO timeShift + (_entity:ORBIT:PERIOD/10)/2^valuePasses.
+					SET timeShift TO timeShift + (_parameterLex["entity"]:ORBIT:PERIOD/10)/2^valuePasses.
 				}
 				ELSE {	
 					SET lastDir TO "decrease".
-					SET timeShift TO timeShift - (_entity:ORBIT:PERIOD/10)/2^valuePasses.
+					SET timeShift TO timeShift - (_parameterLex["entity"]:ORBIT:PERIOD/10)/2^valuePasses.
 				}
 					
 				//Increment valuePasses

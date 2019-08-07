@@ -1,0 +1,59 @@
+So ground ops will be used for ground vehicles that move.
+
+#1 is moving to a location, and this implements the path finder. Ensure location is on the same body... Or does that matter? With regular LATLNG.
+
+How do we implement all the possible ground-vehicle functionality? Needs to be able to be defined in its scenario file.
+
+Payload deployment? Base this on events
+
+EVENTS:
+-Start
+-Airborne
+-turn begin
+-turn end
+-accelerating
+-decelerating
+-LAT_LNG_ARRIVED vs ARRIVED (both?) (Uses original passed-in coords)
+
+
+Components of driving:
+-Acceleration from stop
+-Driving/coasting
+-Deceleration/braking
+-Turning
+-Maneuvering in a non-map-data grid (e.g. base coordinate system, advanced? Must do path finding on kOS side)
+-Local, small-scale maneuvering (e.g. face a direction) (max turning rate per distance covered?)
+-Local maneuvering is just planting a single node, and making sure you are exactly on top of it (optional param for direction to face)
+
+Pickup, dropoff, relocate are small, optional things.
+How to define the part that does the grabbing? E.g. grabber, docking port.
+How to define how it attaches? E.g. maneuver to face, use actuators...
+E.g. always maneuver to face straight towards target, but we define with our port how close we must move to it(e.g. port within wheels, so we roll over it)
+
+
+
+Add some more parameters to the ship config stuff
+Maybe define a vehicle type to that it doesn't need ALL of the fields?
+Although a lot of the steering manager stuff is constant..
+
+
+
+Pickup and dropoff stuff can be handles through events instead..? Atleast with the robotics.
+Go to a location with a specific direction. The move script can take an accuracy for location perhaps?
+
+Should take into account gravity of different planets.
+Also take into account ridges to avoid flying off of them. E.g. if going high slope to low slope and heading UP, slow down beforehand
+
+
+
+
+
+d = V2/(2g(f + G))
+
+Where:
+d = Braking Distance 
+g = Acceleration due to gravity (9.81 m/sec2)
+G = Roadway grade as a percentage; for 2% use 0.02
+V = Initial vehicle speed (m/sec)
+f = Coefficient of friction between the tires and the roadway
+"friction is simply 1 / constant_gravity. So plugging in 9.81 for Kerbin"

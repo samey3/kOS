@@ -1,0 +1,18 @@
+Hyperbolic double-transfer
+
+Replace circular_maneuver during landing (Figure out a new method).
+Time bound it like Lambert. Iterate along it.
+At t + dt, R must be where the landing point will be.
+OR IDEA
+Target orbit will be a circular orbit at the geo-altitude (inc is latitude).
+True anomaly is the longitude/whatever parameter it is (at t + dt)
+
+
+IMPROVED
+Current target longitude will be the true anomaly/whatever the parameter is
+It will be a circular orbit along the surface
+Lambert to intersect?
+However this only works on circular orbits..
+
+WORKS?
+Define an inclined orbit.

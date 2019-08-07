@@ -43,20 +43,20 @@ RUNONCEPATH("lib/processing.ks").
 		
 		
 		//Create the lexicon to hold the desired orbit's parameters
-		//PARAMETER _targetOrbit IS LEXICON().
-			SET _targetOrbit["mu"] TO s1:BODY:MU.	
-			//SET targetOrbit["semimajoraxis"] TO _semimajoraxis.	
-			//SET targetOrbit["eccentricity"] TO _eccentricity.	
-			//SET targetOrbit["inclination"] TO _inclination.	
-			//SET targetOrbit["longitudeofascendingnode"] TO _longitudeofascendingnode.	
-			//SET targetOrbit["argumentofperiapsis"] TO _argumentofperiapsis.	
-			SET _targetOrbit["trueanomaly"] TO (startTime/s1:ORBIT:PERIOD)*360. //This is irrelevant?		
+		LOCAL targOrbit IS _targetOrbit.
+			SET targOrbit["mu"] TO s1:BODY:MU.	
+			//SET targOrbit["semimajoraxis"] TO _semimajoraxis.	
+			//SET targOrbit["eccentricity"] TO _eccentricity.	
+			//SET targOrbit["inclination"] TO _inclination.	
+			//SET targOrbit["longitudeofascendingnode"] TO _longitudeofascendingnode.	
+			//SET targOrbit["argumentofperiapsis"] TO _argumentofperiapsis.	
+			SET targOrbit["trueanomaly"] TO (startTime/s1:ORBIT:PERIOD)*360. //This is irrelevant?		
 			
 		//Get the ECI vecs for the orbits
 		LOCAL rv1 IS getECIVecs(s1:ORBIT).
-		LOCAL rv2 IS getECIVecs(_targetOrbit).
+		LOCAL rv2 IS getECIVecs(targOrbit).
 
-		RETURN lambert(rv1, rv2, _targetOrbit["mu"], allowLob, optArrival, startTime).
+		RETURN lambert(rv1, rv2, targOrbit["mu"], allowLob, optArrival, startTime).
 	}
 
 //#######################################################################

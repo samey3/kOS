@@ -68,7 +68,7 @@
 		//RUNPATH ("basic_functions/nodeBurn.ks", _timeToBurn, diffVector:MAG, diffVector).
 		
 		LOCAL resNode IS nodeFromVector(TIME:SECONDS + _timeToBurn, diffVector).
-		RUNPATH("mission operations/basic functions/executeNode.ks", resNode).
+		RUNPATH("operations/mission operations/basic functions/executeNode.ks", resNode).
 
 		//IF(_precise){
 		//RUNPATH ("basic_functions/modVelocity.ks", SHIP:BODY, VCRS(VCRS(SHIP:POSITION - SHIP:BODY:POSITION, SHIP:VELOCITY:ORBIT), SHIP:POSITION - SHIP:BODY:POSITION):NORMALIZED*req_periMag, 0, 2). }
@@ -80,7 +80,7 @@
 		//RUNPATH ("basic_functions/nodeBurn.ks", _timeToBurn, diffVector:MAG, diffVector).
 		
 		LOCAL resNode IS nodeFromVector(TIME:SECONDS + _timeToBurn, diffVector).
-		RUNPATH("mission operations/basic functions/executeNode.ks", resNode).
+		RUNPATH("operations/mission operations/basic functions/executeNode.ks", resNode).
 		
 		//IF(_precise){
 		//RUNPATH ("basic_functions/modVelocity.ks", SHIP:BODY, VCRS(VCRS(SHIP:POSITION - SHIP:BODY:POSITION, SHIP:VELOCITY:ORBIT), SHIP:POSITION - SHIP:BODY:POSITION):NORMALIZED*req_apoMag, 0, 2). }

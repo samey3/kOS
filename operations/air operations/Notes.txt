@@ -1,0 +1,6 @@
+Main parts, e.g.
+takeoff
+coast/flight
+turn
+landing
+payload deployment

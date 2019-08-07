@@ -11,7 +11,7 @@
 		SET orbitLex["inclination"] TO 0.
 		SET orbitLex["longitudeofascendingnode"] TO 0.
 		SET orbitLex["argumentofperiapsis"] TO 0.
-		SET orbitLex["trueanomaly"] TO 0.
+		SET orbitLex["trueanomaly"] TO RANDOM(). //Random point away from 0.
 	
 	
 	//Intermediate variables
@@ -184,7 +184,7 @@
 			SET v_landLayout:STYLE:WIDTH TO 500.
 		LOCAL v_land IS v_landLayout:ADDVLAYOUT().
 			//Add the label
-			LOCAL landLabel IS v_land:ADDLABEL("Location : " + KERBIN:GEOPOSITIONLATLNG(0,0)).		
+			LOCAL landLabel IS v_land:ADDLABEL("Location : Kerbin:GEOPOSITIONLATLNG(0,0)").		
 				SET landLabel:STYLE:ALIGN TO "CENTER".
 				
 
@@ -206,7 +206,7 @@
 					SET coordinateList TO READJSON(path).
 					FOR dataLine IN coordinateList {
 						LOCAL splitData IS dataLine:SPLIT(",").
-						SET landBox:ADDBUTTON(splitData[0]):ONCLICK TO { SET landCoordinates TO chosenEntity:GEOPOSITIONLATLNG(splitData[1]:TOSCALAR(0),splitData[2]:TOSCALAR(0)). SET landLabel:TEXT TO ("Selected : " + splitData[0]). }.		
+						SET landBox:ADDBUTTON(splitData[0]):ONCLICK TO { SET landCoordinates TO LATLNG(splitData[1]:TOSCALAR(0),splitData[2]:TOSCALAR(0)). SET landLabel:TEXT TO ("Selected : " + splitData[0]). }.		
 					}
 				}	
 			}.
@@ -383,10 +383,10 @@
 		
 		//Creates the result lexicon
 		LOCAL res IS LEXICON(). //Perhaps a third property to return a LIST which contains any additional params, E.g. landing coordinates
-			SET res TO orbitLex.
 			SET res["entity"] TO chosenEntity.
 			SET res["action"] TO chosenAction.
 			SET res["landingcoordinates"] TO landCoordinates.
+			SET res["orbitparameters"] TO orbitLex.
 			
 		//Returns the result lexicon
 		SET GUI_RESULT_RES TO res.
