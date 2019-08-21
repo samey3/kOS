@@ -18,6 +18,9 @@
 	RUNONCEPATH("lib/gameControl.ks").
 	RUNONCEPATH("lib/orbitProperties.ks").
 	
+	RUNONCEPATH("lib/scriptManagement.ks").
+	RUNONCEPATH("lib/eventListener.ks").
+	
 	
 //--------------------------------------------------------------------------\
 //								Program run					   				|

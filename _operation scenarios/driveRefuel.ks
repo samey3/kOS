@@ -32,5 +32,5 @@
 		
 	//Mission steps:
 		configureVessel().
-		//RUNPATH("operations/mission operations/missionBuilder.ks", KERBIN, "nothing", 0, 0).
+		RUNPATH("operations/mission operations/missionBuilder.ks", KERBIN, "nothing", 0, 0).
 		WAIT UNTIL(FALSE).

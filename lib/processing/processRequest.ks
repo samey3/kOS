@@ -9,6 +9,8 @@ LOCAL completePath IS  "lib/processing/requests/job_complete.kr".
 //https://github.com/johnwhall/kos-scripts/blob/master/lib/libmainframe.ks
 FUNCTION lambertOptimize {
 	PARAMETER p_mu.
+	PARAMETER p_rad.
+	PARAMETER p_atmHeight.
 	PARAMETER p_r1.
 	PARAMETER p_v1.
 	PARAMETER p_r2.
@@ -26,6 +28,8 @@ FUNCTION lambertOptimize {
 	SET job TO CREATE(requestPath).
 		job:WRITELN("lambertOptimize").
 		job:WRITELN("" + p_mu).
+		job:WRITELN("" + p_rad).
+		job:WRITELN("" + p_atmHeight).
 		
 		job:WRITELN("" + p_r1:x).
 		job:WRITELN("" + p_r1:y).

@@ -89,15 +89,16 @@
 	
 	//----------------------------------------------------\
 	//Wait until launch position--------------------------|
+		SET SHIP:CONTROL:PILOTMAINTHROTTLE TO 0.
 		throwEvent(SHIP:BODY:NAME + "_LAUNCH_START").
-		//If _orbitLex was given, wait until the ascending node to launch
+		//If _orbitLex was given, wait until the ascending node to launch (or descending node??)
 		IF(_orbitLex <> 0){
 			throwEvent(SHIP:BODY:NAME + "_LAUNCH_WAIT").
 			
 			//Finds the time to launch at
-			LOCAL lngDifference IS wrap360(launchLex["longitudeofascendingnode"] - SHIP:GEOPOSITION:LNG).
+			LOCAL lngDifference IS wrap360(launchLex["longitudeofascendingnode"] - (SHIP:BODY:ROTATIONANGLE + SHIP:GEOPOSITION:LNG)). //Must take into account the body's rotation off of the solar prime vector
 			LOCAL bodyRotRate IS 360/SHIP:BODY:ROTATIONPERIOD.
-			SET launchTime TO (TIME:SECONDS + lngDifference*bodyRotRate).
+			SET launchTime TO (TIME:SECONDS + lngDifference/bodyRotRate).
 			
 			//Warps to 15 seconds before the launch
 			warpTime(launchTime - 15).
@@ -132,7 +133,7 @@
 		throwEvent(SHIP:BODY:NAME + "_LAUNCH_LIFTOFF").
 		
 		//Stage setup
-		LOCK STEERING TO HEADING(90 + launchLex["inclination"], trajPitch). //90 east, -90(270) west
+		LOCK STEERING TO HEADING(90 - launchLex["inclination"], trajPitch). //90 east, -90(270) west
 	
 		//Until we are within the buffer distance of the initial apoapsis (and safely out of the atmosphere)
 		UNTIL(SHIP:ORBIT:APOAPSIS >= targetAltitude){ 
@@ -157,7 +158,8 @@
 			PRINT("Stage ID : " + STAGE_ID).
 			WAIT 0.01.
 		}
-		LOCK THROTTLE TO 0.
+		LOCK THROTTLE TO 0.		
+		throwEvent(SHIP:BODY:NAME + "_LAUNCH_COASTING").
 		
 		//Coast until out of atmosphere
 		UNTIL(SHIP:ALTITUDE >= (targetAltitude - bufferDistance)){

@@ -10,12 +10,12 @@ FUNCTION solarVelocity {
 }
 
 //-----------------------------------------------------------------------------------------------------------
-// 	Name: meanAnomaly
+// 	Name: getMeanAnomaly
 //	Parameters : 
 //		- Gets an an object's mean anomaly
 //	
 //-----------------------------------------------------------------------------------------------------------
-FUNCTION meanAnomaly {
+FUNCTION getMeanAnomaly {
 	PARAMETER _body.
 
 	//Position and eccentricity vectors

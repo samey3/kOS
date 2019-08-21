@@ -78,29 +78,18 @@
 //--------------------------------------------------------------------------/
 
 
-	//OR
-	//Why don't we find the acceleration of the RCS thrusters, and over time of 0.1s, find the total change.
-	//Vary thrust based on enough to cancel out any velocity.
-
-
-	//ALT RADAR NEEDS TO BE SWITCHED OUT
-	//Perhaps water landings are messed up because its taking radar to ground and not sea level?
-
-	//Uses the prediction for deciding when to start the burn
 	RCS ON.
 	LOCK STEERING TO ((-SHIP:VELOCITY:SURFACE):DIRECTION).
 	
-	//IF(landingCoordinates <> 0){	
+	LOCK impactDif TO 0.
+	IF(landingCoordinates <> 0 AND (SHIP:BODY:ATM:EXISTS AND SHIP:BODY:ATM:SEALEVELPRESSURE >= 0.3)){	
 		LOCK STEERING TO (-ADDONS:TR:PLANNEDVECTOR):DIRECTION.
 		ADDONS:TR:SETTARGET(landingCoordinates).
 		LOCK STEERING TO (-ADDONS:TR:CORRECTEDVECTOR):DIRECTION.
 		
-		//LOCK STEERING TO ((-ADDONS:TR:PLANNEDVECTOR) + 100*(-(ADDONS:TR:CORRECTEDVECTOR - ADDONS:TR:PLANNEDVECTOR))):DIRECTION.	
-		LOCAL LOCK impactDif TO (landingCoordinates:POSITION - getImpactCoords():POSITION).	
-		//LOCAL LOCK impactDif TO (landingCoordinates:POSITION - ADDONS:TR:IMPACTPOS():POSITION).	
+		LOCK impactDif TO (landingCoordinates:POSITION - getImpactCoords():POSITION).	
 		LOCK STEERING TO (30*(-ADDONS:TR:PLANNEDVECTOR:NORMALIZED) - SQRT(impactDif:MAG)*impactDif:NORMALIZED):DIRECTION.
-		//LOCK STEERING TO (45*(-ADDONS:TR:PLANNEDVECTOR:NORMALIZED) - (45*(SQRT(impactDif:MAG)/(SQRT(impactDif:MAG) + 10)))*impactDif:NORMALIZED):DIRECTION.		
-	//}
+	}
 	LOCAL t1 IS 0.
 	LOCAL t2 IS 0.
 	LOCAL t3 IS 0.
@@ -119,9 +108,11 @@
 		//If _landObject, do this instead vvv
 		//RUNPATH("basic_functions/modImpact_iterative.ks", V(0,0,0), _coordinates, rcsList:LENGTH).		
 			
-		SET t1 TO VECDRAWARGS(SHIP:POSITION, 45*(-ADDONS:TR:PLANNEDVECTOR:NORMALIZED),RED,"Planned",1,TRUE).
-		SET t2 TO VECDRAWARGS(SHIP:POSITION, (45*(SQRT(impactDif:MAG)/(SQRT(impactDif:MAG) + 10)))*impactDif:NORMALIZED,GREEN,"Mod",1,TRUE).
-		SET t3 TO VECDRAWARGS(SHIP:POSITION, (45*(-ADDONS:TR:PLANNEDVECTOR:NORMALIZED) - (45*(SQRT(impactDif:MAG)/(SQRT(impactDif:MAG) + 10)))*impactDif:NORMALIZED),YELLOW,"Result",1,TRUE).
+		IF(landingCoordinates <> 0){
+			//SET t1 TO VECDRAWARGS(SHIP:POSITION, 45*(-ADDONS:TR:PLANNEDVECTOR:NORMALIZED),RED,"Planned",1,TRUE).
+			//SET t2 TO VECDRAWARGS(SHIP:POSITION, (45*(SQRT(impactDif:MAG)/(SQRT(impactDif:MAG) + 10)))*impactDif:NORMALIZED,GREEN,"Mod",1,TRUE).
+			//SET t3 TO VECDRAWARGS(SHIP:POSITION, (45*(-ADDONS:TR:PLANNEDVECTOR:NORMALIZED) - (45*(SQRT(impactDif:MAG)/(SQRT(impactDif:MAG) + 10)))*impactDif:NORMALIZED),YELLOW,"Result",1,TRUE).
+		}
 	}	
 
 	//Varies the thrust required for the descent

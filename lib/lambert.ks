@@ -99,7 +99,7 @@ RUNONCEPATH("lib/processing.ks").
 	  
 		//local res to lambertOptimizeBounded(s1, s2, startTime, startTime + synodicPeriod, dtMin, dtMax, allowLob, optArrival).
 		//local res to lambertOptimizeBounded(rv1, rv2, mu, startTime, startTime + synodicPeriod, dtMin, dtMax, allowLob, optArrival).
-		local res to lambertOptimizeBounded(rv1, rv2, mu, startTime, endTime, dtMin, dtMax, allowLob, optArrival).
+		local res to lambertOptimizeBounded(rv1, rv2, mu, SHIP:BODY:RADIUS, (CHOOSE SHIP:BODY:ATM:HEIGHT IF SHIP:BODY:ATM:EXISTS ELSE 0), startTime, endTime, dtMin, dtMax, allowLob, optArrival).
 	  
 		return res.
 	}
@@ -128,7 +128,7 @@ RUNONCEPATH("lib/processing.ks").
 	  
 		//local res to lambertOptimizeBounded(s1, s2, startTime, startTime + synodicPeriod, dtMin, dtMax, allowLob, optArrival).
 		//local res to lambertOptimizeBounded(rv1, rv2, s1:body:mu, startTime, startTime + synodicPeriod, dtMin, dtMax, allowLob, optArrival).
-		local res to lambertOptimizeBounded(rv1, rv2, s1:body:mu, startTime, endTime, dtMin, dtMax, allowLob, optArrival).
+		local res to lambertOptimizeBounded(rv1, rv2, s1:body:mu, s1:BODY:RADIUS, (CHOOSE s1:BODY:ATM:HEIGHT IF s1:BODY:ATM:EXISTS ELSE 0), startTime, endTime, dtMin, dtMax, allowLob, optArrival).
 	  
 		return res.
 	}
@@ -139,6 +139,8 @@ RUNONCEPATH("lib/processing.ks").
 	  parameter rv1.
 	  parameter rv2.
 	  PARAMETER mu.
+	  PARAMETER rad.
+	  PARAMETER atmHeight.
 	  parameter tMin.
 	  parameter tMax.
 	  parameter dtMin is 0.
@@ -188,7 +190,7 @@ RUNONCEPATH("lib/processing.ks").
 		set tStep to max(MIN_STEP_T, (tMax - tMin) / 10000).
 		set dtStep to max(MIN_STEP_DT, (dtMax - dtMin) / 500).
 		
-		set res to solveLambert(mu, //b:mu,
+		set res to solveLambert(mu, rad, atmHeight,
 								rv1[0], rv1[1],
 								rv2[0], rv2[1],
 								tMin, tMax, tStep,

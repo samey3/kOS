@@ -80,6 +80,7 @@
 	//#																		#
 	//#######################################################################
 		throwEvent(SHIP:BODY:NAME + "_LAND_1").
+		
 		IF(willImpact(SHIP) = FALSE){
 			LOCAL targCoords IS _coordinates.
 			IF(SHIP:BODY:ATM:EXISTS AND SHIP:BODY:ATM:SEALEVELPRESSURE >= 0.3){
@@ -190,86 +191,89 @@
 	//#																		#
 	//#######################################################################
 		throwEvent(SHIP:BODY:NAME + "_LAND_2").
-		//If a landing location was chosen
-		IF(_landingLocation <> 0){		
 		
-			//----------------------------------------------------\
-			//Variables-------------------------------------------|			
-				//Horizontal speed, distance, and stopping distance
-				//These are used for waiting until the burn
-				LOCAL LOCK planeNormalVector TO (_coordinates:POSITION - BODY:POSITION).
-				LOCAL LOCK horizontalVector TO projectToPlane((_coordinates:POSITION - SHIP:POSITION), planeNormalVector).
-				
-				LOCAL initialHorizontalVector IS projectToPlane((_coordinates:POSITION - SHIP:POSITION), planeNormalVector):NORMALIZED.
-					LOCAL LOCK horizontalSpeed TO scalarProjection(SHIP:VELOCITY:SURFACE, initialHorizontalVector).
-					LOCAL LOCK horizontalDistance TO scalarProjection((_coordinates:POSITION - SHIP:POSITION), initialHorizontalVector).
-											
-					//LOCAL LOCK horizontalVelocity TO projectToPlane(SHIP:VELOCITY:SURFACE, planeNormalVector).
-							
-											
-				LOCAL LOCK stopDistance TO (-(horizontalSpeed^2)/(2*(-SHIP:AVAILABLETHRUST/SHIP:MASS))).
-
+		IF(SHIP:AVAILABLETHRUST > 0){
 		
-			//----------------------------------------------------\
-			//Perform corrections---------------------------------|	
-				RCS ON.
-				LOCK STEERING TO SRFRETROGRADE.
-		
-				//IF no atmo, use RCS. If sufficient atmo, use vessel itself
-				//IF(SHIP:BODY:ATM:EXISTS AND SHIP:BODY:ATM:SEALEVELPRESSURE >= 0.3){
-				IF(SHIP:BODY:ATM:EXISTS){
-					//Initial glide correction code in-atmosphere
-					UNTIL (horizontalDistance <= (0.85*stopDistance)){		
-						CLEARSCREEN.
-						PRINT("Stop distance : " + stopDistance).
-						PRINT("Distance to burn : " + (horizontalDistance - 0.85*stopDistance)).			
-						//Do some horizontal gliding corrections
-						//We are allowed to reference Trajectories addon in here
-					}
-				}
-				ELSE{
-					//Should we make it wait until a specific time for this?
-					RUNPATH("operations/mission operations/_to_remove/modTrajectory.ks", _coordinates, 0, 20).
-					
-					//Wait until burn
-					UNTIL (horizontalDistance <= (0.85*stopDistance)){		
-						CLEARSCREEN.
-						PRINT("Stop distance : " + stopDistance).
-						PRINT("Distance to burn : " + (horizontalDistance - 0.85*stopDistance)).			
-					}
-				}	
-		}
-	
-	
-	//#######################################################################
-	//#																		#
-	//# Reduce parallel difference between predicted and desired impact		#
-	//#																		#
-	//#######################################################################
-		throwEvent(SHIP:BODY:NAME + "_LAND_3").
-		//If a landing location was chosen
-		IF(_landingLocation <> 0){	
-
-			//----------------------------------------------------\
-			//Variables-------------------------------------------|
-				LOCK planeNormalVector TO (_coordinates:POSITION - BODY:POSITION).
-				LOCAL initialHorizontalVector IS projectToPlane((_coordinates:POSITION - SHIP:POSITION), planeNormalVector):NORMALIZED.
-				LOCAL LOCK impactDifference TO scalarProjection((getImpactCoords():POSITION - _coordinates:POSITION), initialHorizontalVector).
-				
+			//If a landing location was chosen
+			IF(_landingLocation <> 0){		
 			
-			//----------------------------------------------------\
-			//Perform the burn------------------------------------|		
-				LOCK STEERING TO SRFRETROGRADE.
-				LOCK THROTTLE TO 1.
-				//Until error is sufficiently small, or most horizontal velocity has been burned off
-				UNTIL (impactDifference < 300 OR VANG(projectToPlane(SRFRETROGRADE:VECTOR, planeNormalVector), initialHorizontalVector) < 90){		
-					CLEARSCREEN.
-					PRINT("Difference : " + impactDifference).
-				}
-				LOCK THROTTLE TO 0.			
-		}
-		
+				//----------------------------------------------------\
+				//Variables-------------------------------------------|			
+					//Horizontal speed, distance, and stopping distance
+					//These are used for waiting until the burn
+					LOCAL LOCK planeNormalVector TO (_coordinates:POSITION - BODY:POSITION).
+					LOCAL LOCK horizontalVector TO projectToPlane((_coordinates:POSITION - SHIP:POSITION), planeNormalVector).
+					
+					LOCAL initialHorizontalVector IS projectToPlane((_coordinates:POSITION - SHIP:POSITION), planeNormalVector):NORMALIZED.
+						LOCAL LOCK horizontalSpeed TO scalarProjection(SHIP:VELOCITY:SURFACE, initialHorizontalVector).
+						LOCAL LOCK horizontalDistance TO scalarProjection((_coordinates:POSITION - SHIP:POSITION), initialHorizontalVector).
+												
+						//LOCAL LOCK horizontalVelocity TO projectToPlane(SHIP:VELOCITY:SURFACE, planeNormalVector).
+								
+												
+					LOCAL LOCK stopDistance TO (-(horizontalSpeed^2)/(2*(-SHIP:AVAILABLETHRUST/SHIP:MASS))).
+
+			
+				//----------------------------------------------------\
+				//Perform corrections---------------------------------|	
+					RCS ON.
+					LOCK STEERING TO SRFRETROGRADE.
+			
+					//IF no atmo, use RCS. If sufficient atmo, use vessel itself
+					//IF(SHIP:BODY:ATM:EXISTS AND SHIP:BODY:ATM:SEALEVELPRESSURE >= 0.3){
+					IF(SHIP:BODY:ATM:EXISTS){
+						//Initial glide correction code in-atmosphere
+						UNTIL (horizontalDistance <= (0.85*stopDistance)){		
+							CLEARSCREEN.
+							PRINT("Stop distance : " + stopDistance).
+							PRINT("Distance to burn : " + (horizontalDistance - 0.85*stopDistance)).			
+							//Do some horizontal gliding corrections
+							//We are allowed to reference Trajectories addon in here
+						}
+					}
+					ELSE{
+						//Should we make it wait until a specific time for this?
+						//RUNPATH("operations/mission operations/_to_remove/modTrajectory.ks", _coordinates, 0, 20).
+						
+						//Wait until burn
+						UNTIL (horizontalDistance <= (0.85*stopDistance)){		
+							CLEARSCREEN.
+							PRINT("Stop distance : " + stopDistance).
+							PRINT("Distance to burn : " + (horizontalDistance - 0.85*stopDistance)).			
+						}
+					}	
+			}
 	
+	
+		//#######################################################################
+		//#																		#
+		//# Reduce parallel difference between predicted and desired impact		#
+		//#																		#
+		//#######################################################################
+			throwEvent(SHIP:BODY:NAME + "_LAND_3").
+			//If a landing location was chosen
+			IF(_landingLocation <> 0){	
+
+				//----------------------------------------------------\
+				//Variables-------------------------------------------|
+					LOCK planeNormalVector TO (_coordinates:POSITION - BODY:POSITION).
+					LOCAL initialHorizontalVector IS projectToPlane((_coordinates:POSITION - SHIP:POSITION), planeNormalVector):NORMALIZED.
+					LOCAL LOCK impactDifference TO scalarProjection((getImpactCoords():POSITION - _coordinates:POSITION), initialHorizontalVector).
+					
+				
+				//----------------------------------------------------\
+				//Perform the burn------------------------------------|		
+					LOCK STEERING TO SRFRETROGRADE.
+					LOCK THROTTLE TO 1.
+					//Until error is sufficiently small, or most horizontal velocity has been burned off
+					UNTIL (impactDifference < 300 OR VANG(projectToPlane(SRFRETROGRADE:VECTOR, planeNormalVector), initialHorizontalVector) < 90){		
+						CLEARSCREEN.
+						PRINT("Difference : " + impactDifference).
+					}
+					LOCK THROTTLE TO 0.			
+			}
+		}	
+		
 	//#######################################################################
 	//#																		#
 	//# Perform landing														#
@@ -282,8 +286,17 @@
 		ELSE IF(_coordinates <> 0){ SET paramObj TO _coordinates. }
 		//Else leave as 0
 		
-		//Pass in the parameter (vessel, geocoordinates, or 0)
-		RUNPATH("operations/mission operations/basic functions/suicideBurn.ks", paramObj).
+		IF(SHIP:AVAILABLETHRUST > 0){
+			//Pass in the parameter (vessel, geocoordinates, or 0)
+			RUNPATH("operations/mission operations/basic functions/suicideBurn.ks", paramObj).
+		}
+		ELSE{
+			//In the case that its just a pod
+			LOCK STEERING TO -SHIP:VELOCITY:SURFACE.
+			WAIT UNTIL(SHIP:STATUS = "LANDED" OR SHIP:STATUS = "SPLASHED").
+		}
+		
+		
 		
 
 //--------------------------------------------------------------------------\

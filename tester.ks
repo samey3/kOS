@@ -39,6 +39,7 @@ LOCAL orbitLex IS LEXICON().
 //RUNPATH("_operation scenarios/launch_science.ks").
 //RUNPATH("_operation scenarios/orbit_ike.ks").
 //RUNPATH("_operation scenarios/test_actions.ks").
+RUNPATH("_operation scenarios/mun_lander.ks").
 
 
 //4.3 COM shift, 1.3 probe to port

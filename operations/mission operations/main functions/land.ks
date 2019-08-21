@@ -20,6 +20,14 @@
 		IF(_parameterLex:HASKEY("landingcoordinates")){ SET landingCoordinates TO _parameterLex["landingcoordinates"]. }
 	LOCAL interceptAltitude IS (SHIP:BODY:RADIUS - 50000).
 		IF(_parameterLex:HASKEY("interceptaltitude")){ SET interceptAltitude TO _parameterLex["interceptaltitude"]. }
+		
+	LOCAL circLex IS LEXICON().
+		SET circLex["semimajoraxis"] TO SHIP:ORBIT:SEMIMAJORAXIS.
+		SET circLex["inclination"] TO 0.
+		SET circLex["eccentricity"] TO 0.
+		SET circLex["longitudeofascendingnode"] TO 0.
+		SET circLex["argumentofperiapsis"] TO 0.
+		SET circLex["trueanomaly"] TO 0.
 	
 	
 //--------------------------------------------------------------------------\
@@ -31,7 +39,11 @@
 	//Move into equatorial orbit--------------------------|
 		throwEvent(SHIP:BODY:NAME + "_LAND_PREPARE").
 		//At a later point, create a script that can land from any orbit.
-		//RUNPATH("operations/mission operations/intermediate functions/setOrbit.ks", maxTimes, orbitLex).
+		//If not already in a circular orbit, get into one
+		IF(SHIP:ORBIT:ECCENTRICITY > 0.01){
+			RUNPATH("operations/mission operations/intermediate functions/setOrbit.ks", circLex).
+		}
+		
 		
 	//----------------------------------------------------\
 	//Execute the landing script--------------------------|
