@@ -24,12 +24,18 @@
 			SET parameterLex["interceptaltitude"] TO DUNA:RADIUS - 20000.
 			
 			//Orbiting/launching
-			SET parameterLex["semimajoraxis"] TO 375000.
+			SET parameterLex["semimajoraxis"] TO 400000. 
 			SET parameterLex["eccentricity"] TO 0.001.
 			SET parameterLex["inclination"] TO 0.
 			SET parameterLex["longitudeofascendingnode"] TO 0.
 			SET parameterLex["argumentofperiapsis"] TO 0.
 			SET parameterLex["trueanomaly"] TO 0.
+			
+		LOCAL lfCapacity IS 0.
+		LIST RESOURCES IN resList.
+		FOR res IN resList {
+			IF res:NAME = "LiquidFuel" { SET lfCapacity TO res:CAPACITY. BREAK. }
+		}
 	
 	//Custom events
 		//ON(){
@@ -85,6 +91,56 @@
 			CHUTES ON.
 		}, FALSE).
 		
+		//_LAND_COMPLETE
+		
+		
+		
+		//Duna landing events
+		
+		addListener("DUNA_LAND_2", {
+			handlePartAction("fins", "extend fins").
+		}, TRUE).
+		
+		addListener("DUNA_LAND_COMPLETE", {
+			handlePartAction("fins", "retract fins").
+		}, TRUE).
+		
+		
 	//Mission steps:
 		configureVessel(). //Configured with a ship config. Call this again with a specific vessel name if e.g. rocket becomes a rover
-		RUNPATH("operations/mission operations/missionBuilder.ks", parameterLex).
+		UNTIL(FALSE){
+			IF(SHIP:STATUS = "orbiting"){
+				SET parameterLex["action"] TO "land".
+				RUNPATH("operations/mission operations/missionBuilder.ks", parameterLex).
+			}
+
+			DEPLOYDRILLS ON.
+			WAIT 5.
+			DRILLS ON.
+			ISRU ON.
+			WAIT 0.01.
+			handlePartAction("radiators", "extend radiator").
+			WAIT 0.01.
+			handlePartAction("panels", "extend solar panel").
+			WAIT 5.
+			UNTIL((SHIP:LIQUIDFUEL / lfCapacity) > 0.99){
+				CLEARSCREEN.
+				PRINT("Liquid fuel : " + ROUND((SHIP:LIQUIDFUEL / lfCapacity)*100, 2) + "%").
+				WAIT 0.01.
+			}
+			WAIT 0.01.
+			handlePartAction("radiators", "retract radiator").
+			WAIT 0.01.
+			handlePartAction("panels", "retract solar panel").
+			DRILLS OFF.
+			WAIT 1.
+			DEPLOYDRILLS OFF.
+			ISRU OFF.
+			WAIT 5.
+						
+			SET parameterLex["action"] TO "orbit".
+			RUNPATH("operations/mission operations/missionBuilder.ks", parameterLex).			
+		}
+		
+		
+		

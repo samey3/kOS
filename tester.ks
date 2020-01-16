@@ -29,7 +29,7 @@ LOCAL orbitLex IS LEXICON().
 //RUNPATH("operations/mission operations/missionBuilder.ks", MOHO, "orbit", 0, orbitLex).
 //RUNPATH("operations/mission operations/missionBuilder.ks", MOHO, "orbit", 0, orbitLex).
 //RUNPATH("operations/mission operations/missionBuilder.ks", MOHO, "orbit", 0, orbitLex).
-//RUNPATH("operations/mission operations/missionBuilder.ks", MOHO, "orbit", 0, orbitLex).
+RUNPATH("operations/mission operations/missionBuilder.ks").
 
 
 
@@ -39,7 +39,7 @@ LOCAL orbitLex IS LEXICON().
 //RUNPATH("_operation scenarios/launch_science.ks").
 //RUNPATH("_operation scenarios/orbit_ike.ks").
 //RUNPATH("_operation scenarios/test_actions.ks").
-RUNPATH("_operation scenarios/mun_lander.ks").
+//RUNPATH("_operation scenarios/mun_lander.ks").
 
 
 //4.3 COM shift, 1.3 probe to port
@@ -61,10 +61,10 @@ RUNPATH("_operation scenarios/mun_lander.ks").
 
 
 //RUNPATH("operations/mission operations/basic functions/moveToPoint4.ks", targVessel, targVessel:FACING:VECTOR*100). //, SHIP, faceDir).
-LOCAL parameterLex IS LEXICON().
-	SET parameterLex["entity"] TO TARGET.
+//LOCAL parameterLex IS LEXICON().
+//	SET parameterLex["entity"] TO TARGET.
 
-RUNPATH("operations/mission operations/main functions/dock.ks", parameterLex).
+//RUNPATH("operations/mission operations/main functions/dock.ks", parameterLex).
 
-
+configureVessel("Atlas V").
 

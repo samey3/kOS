@@ -98,7 +98,7 @@
 	
 
 	//Finds the dimensions of the vessel (lower, upper, total)
-	FUNCTION vesselHeight {
+	FUNCTION vesselHeight2 {
 		PARAMETER _craft.
 		
 		//Import the math library
@@ -126,9 +126,14 @@
 		//Return lower, upper, and total vessel height
 		RETURN LIST(biggestLower, biggestUpper, biggestLower + biggestUpper).
 	}
+	FUNCTION vesselHeight {
+		PARAMETER _craft.
+		LOCAL box IS _craft:BOUNDS.		
+		RETURN LIST(box:RELMIN:Z, box:RELMAX:Z, box:SIZE:Z).	
+	}
 
 	//Finds the distance the vessel is submerged under water (below 0 altitude)
-	FUNCTION distanceSubmerged {
+	FUNCTION distanceSubmerged2 {
 		PARAMETER _craft.
 
 		//Find the distance submerged
@@ -140,6 +145,11 @@
 		//ELSE { RETURN dist. }
 		
 		RETURN dist.
+	}
+	FUNCTION distanceSubmerged {
+		PARAMETER _craft.
+		LOCAL box IS _craft:BOUNDS.		
+		RETURN box:BOTTOMALT.
 	}
 
 	

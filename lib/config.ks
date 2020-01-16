@@ -2,7 +2,7 @@
 //Creates a new one if one does not already exist
 FUNCTION configureVessel {
 	PARAMETER _vesselName IS SHIP:NAME.
-
+	
 	LOCAL configPath IS ("data/ship configs/" + _vesselName + ".ksc").
 
 	//If does not exist, creates config file with ship name
@@ -20,7 +20,7 @@ FUNCTION configureVessel {
 			configLex:ADD("PITCHTORQUEFACTOR", STEERINGMANAGER:PITCHTORQUEFACTOR).
 			configLex:ADD("YAWTORQUEFACTOR", STEERINGMANAGER:YAWTORQUEFACTOR).
 			configLex:ADD("ROLLTORQUEFACTOR", STEERINGMANAGER:ROLLTORQUEFACTOR).
-		
+			configLex:ADD("BOOTSCRIPT", "").
 		WRITEJSON(configLex, configPath).
 	}
 	
@@ -38,4 +38,21 @@ FUNCTION configureVessel {
 		SET STEERINGMANAGER:PITCHTORQUEFACTOR TO resLex["PITCHTORQUEFACTOR"].
 		SET STEERINGMANAGER:YAWTORQUEFACTOR TO resLex["YAWTORQUEFACTOR"].
 		SET STEERINGMANAGER:ROLLTORQUEFACTOR TO resLex["ROLLTORQUEFACTOR"].	
+	
+	//Sets the boot file to the default boot script
+	SET CORE:BOOTFILENAME TO "boot/genericBoot.ks".
+}
+
+//Runs the listed boot script if any
+FUNCTION runBootScript{
+	PARAMETER _vesselName IS SHIP:NAME.
+	
+	LOCAL configPath IS ("data/ship configs/" + _vesselName + ".ksc").
+	LOCAL operationsScenariosPath IS ("_operation scenarios/").
+	LOCAL resLex IS LEXICON().
+	
+	SET resLex TO READJSON(configPath).
+	IF(NOT (resLex["BOOTSCRIPT"] = "")){
+		RUNPATH(operationsScenariosPath + resLex["BOOTSCRIPT"]).
+	}
 }

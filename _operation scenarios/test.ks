@@ -1,18 +1,36 @@
 	RUNONCEPATH("lib/eventListener.ks").
 	RUNONCEPATH("lib/config.ks").
-		
+	
+	
+	
+			
+	
 	//Variables
 		LOCAL parameterLex IS LEXICON().
 			//Basic parameters
-			SET parameterLex["entity"] TO MUN.
-			SET parameterLex["action"] TO "land".
+			//SET parameterLex["entity"] TO DUNA. //Vessel("vessel name")
+			//SET parameterLex["action"] TO "orbit". //Orbit, rendezvous, dock, land, launch
 			
-			//Landing
-			SET parameterLex["landingcoordinates"] TO MUN:GEOPOSITIONLATLNG(0,0).
-			SET parameterLex["interceptaltitude"] TO MUN:RADIUS + 2000.
+			SET parameterLex["entity"] TO JOOL. //Vessel("vessel name")
+			SET parameterLex["action"] TO "orbit". //Orbit, rendezvous, dock, land, launch
+
+			//Orbiting/launching
+			SET parameterLex["semimajoraxis"] TO 6100000.
+			SET parameterLex["eccentricity"] TO 0.
+			SET parameterLex["inclination"] TO 90.
+			SET parameterLex["longitudeofascendingnode"] TO 45.
+			SET parameterLex["argumentofperiapsis"] TO 50.
+			SET parameterLex["trueanomaly"] TO 0.
+	
+	//Custom events
+		//ON(){
+			//Code
+			//PRESERVE.
+		//}
+
 	
 	//Event listeners
-		//Liftoff
+//Liftoff
 		addListener("KERBIN_LAUNCH_LIFTOFF", {
 			handlePartAction("1", "activate engine").
 			handlePartAction("1", "release clamp").
@@ -59,24 +77,5 @@
 		}, FALSE).
 		
 	//Mission steps:
-		//Lands on the Mun at (0,0)
-		configureVessel().
-		RUNPATH("operations/mission operations/missionBuilder.ks", parameterLex).
-		
-		//WAITs 5 minutes
-		CLEARVECDRAWS().
-		LOCAL liftoffTime IS TIME:SECONDS + 300.
-		UNTIL(TIME:SECONDS >= liftoffTime){
-			CLEARSCREEN.
-			PRINT("Time until startup : " + ROUND((liftoffTime - TIME:SECONDS), 0) + "s").
-			WAIT 0.01.
-		}
-		SET SHIP:CONTROL:PILOTMAINTHROTTLE TO 0.
-		
-		//Lands back on Kerbin at the launch pad
-		configureVessel("Atlas V lander").
-			SET parameterLex["entity"] TO KERBIN.
-			SET parameterLex["action"] TO "land".
-			SET parameterLex["interceptaltitude"] TO KERBIN:RADIUS.
-			SET parameterLex["landingcoordinates"] TO KERBIN:GEOPOSITIONLATLNG(-0.0972078366335618,-74.5576783933035).
+		configureVessel(). //Configured with a ship config. Call this again with a specific vessel name if e.g. rocket becomes a rover
 		RUNPATH("operations/mission operations/missionBuilder.ks", parameterLex).

@@ -1,0 +1,107 @@
+Redo atmosphere-free landings
+	-Can leave in that innefficient 'distance until burn' for now.
+	-Implement use of RCS to modify trajectory to target via planes and PID.
+	-Rewrite land.ks and suicideBurn.ks in current formats.
+
+	-LANDING SHOULD BE ABLE TO SUPPORT NON-POWERED LANDINGS, E.G. CHUTES.
+	-DIFFERENT LANDING STYLES OR ONE SCRIPT? DO THIS FINALLY.
+
+	-Replace the distance to burn with a time. Just use mean anomaly of current and burn start.
+
+Implement a permanent event listener for engine flameouts? e.g. in coast phase when solids run out, but doesn't trigger event currently.
+
+Implement a function or something for locking steering. E.g. takes a vector, but uses LOOKDIRUP to always align solar panels with the sun.
+
+
+The +13 degrees thing really messes up e.g. landings on Duna
+
+Put a try-catch around the execute stuff? If it completely fails, NO REULT AT ALL e.g. null pointer on Dv1, then return a msg to kOS
+Tell it that it needs to clear the directory, and write a new request. After several tries where it fails, it should stop the script.
+
+
+
+At the 'end' of a script stack, only throw events while going 'down' and not back up. e.g. suicide burn completes, its landed, so dont throw events going back up.
+
+
+
+
+
+
+How shall the new landing work?
+	-Deorbit if needed
+	-Coast
+	-Land burn
+
+Any possibility yet of landing from any orbit?
+	-Maybe after we write our own Lambert optimizer
+
+What if we don't want a landing burn, and e.g. parachutes?
+	-Precision-forward parachute landing?
+
+Coasting in-atmo vs no-atmo?
+	-Maybe change to above 0.05?
+	-Our vessel will not always be aligned with the plane, how to fix?
+	-Atmospheric prediction?
+
+Biggest problems are atmospheric prediction beforehand, and any-orbit landings
+	-Lets assume we're already on an orbit that will impact at the target
+		*Immediately at the target, or pass over it?
+		*Keep intercept altitude for this, e.g. 10Km over. For parachutes, this can be set to BODY:RADIUS.
+	-Currently, coasting predicts when to start burn based on our engine thrust
+	-What if no engines (e.g. only parachutes), how to stop the errors?
+
+So our current trajectory will bring us to/over our target position.
+	-Coast-end burn (e.g. above target) if wanted, e.g. reduce all horizontal velocity above the landing point
+	-Suicide landing burn
+	-Different ship designs can use one or both of these, or neither
+	-How to choose which it uses?
+		*Ship configs?
+		*Mission scenarios? (Can define in parameterLex!!!!! By default, maybe none to avoid errors)
+		*Figures it out on its own?
+	-If not all used, when do we start them?
+		*e.g. no re-entry burn but want a landing burn
+		*Landing burn can immediately run I suppose
+
+How to do the re-entry burn?
+	-Currently starts burn some horizontal distance away, using kinematic equations
+	-Perhaps switch this to angular stuff somehow?
+	-Additionally, has no relation to the interceptAltitude (UNLESS NO LANDING LOCATION GIVEN AND RE-ENTRY BURN ENABLED).
+	-Uses either our own, or trajectories for impact prediction ONCE BURNING, reduces the forward/backward distance to 0.
+	-Should it follow the surface velocity, or orbital velocity? Currently follows surface and that presents problems if the target location is behind.
+		*e.g. just hold the facing near the end. No problems code-wise when telling it when to stop burning atleast.
+	-How should no-target-coordinates reentry burn work?
+		*Start burning at intercept altitude, but how much?
+		*Really, a minimal amount is most efficient, and we don't care about the landing position
+		*Intercept altitude SHOULD be roughly the lowest point in the orbit, so reduce velocity to 'circular orbit velocity' so apoapsis doesnt rise up.
+
+How to do coasting?
+	-If no landing target, don't bother with tilting or RCS adjustments
+	-Any coasting BEFORE the re-entry burn?
+	-Coasting AFTER the re-entry burn?
+	-How to make it properly switch between atmo and no-atmo coasting?
+		*Both kinds of coasting at same time?
+		*e.g. our error is big so use both (nah..?)
+
+Suicide burns
+	-This time don't just use vertical velocity
+	-Make it use the surface velocity, but also take into account the vertical acceleration
+
+
+
+How to define ANY landing location, and how to do burns around this?
+	-E.g. no landing coords, but given an intercept Alt. Do the entry burn (if chosen) at that altitude?
+
+Altitude event listener
+	-Engine flameout again too?
+	-In that scriptEvents thing, how about passing it initial parameters for which conditions to listen for?
+
+parameterLex variables for landing
+	-Intercept altitude
+	-Re-entry burn
+	-Landing burn
+	-Landing coordinates (0 scalar if none) (what about landing on another vessel?)
+		*Use top-level parameter extraction perhaps? will pull out the new altitude to land at.
+		*If our landing spot is outside the bounds of target vessel, then ignore its height and land normally.
+		*What if a water landing, will it just land on the surface? (e.g. Use MAX()).
+
+

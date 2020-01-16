@@ -13,8 +13,14 @@
 			SET parameterLex["standoffDistance"] TO 100.
 			
 			//Landing
-			SET parameterLex["landingcoordinates"] TO KERBIN:GEOPOSITIONLATLNG(0,0).
+			SET parameterLex["landingtarget"] TO KERBIN:GEOPOSITIONLATLNG(0,0). //Geoposition, vessel, 0 default (no landing coordinates)
+			SET parameterLex["landVesselPartTag"] TO "". //Part tag on target vessel to use for pad altitude and center reference
 			SET parameterLex["interceptaltitude"] TO 0.
+			SET parameterLex["reenteronly"] TO FALSE. //Set to true if you would like to switch to spaceplane code upon reentering
+			SET parameterLex["aimahead"] TO 0. //How far ahead of final landing location we want to be on for our initial trajectory. e.g. 0 for direct impact (i.e. no reentry burn). 
+			SET parameterLex["reentryburn"] TO FALSE. //Reentry burn to adjust impact coordinates to desired coordinates
+			SET parameterLex["burnendangle"] TO 0. //Angle between vessel and impact location (body as center) at the end of the reentry burn
+			SET parameterLex["landingburn"] TO FALSE.
 			
 			//Orbiting/launching
 			SET parameterLex["semimajoraxis"] TO KERBIN:BODY:RADIUS + 100000.

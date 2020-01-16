@@ -70,8 +70,6 @@
 	ELSE IF (_landObject <> 0){
 		SET landingCoordinates TO _landObject. }
 		
-	
-		
 
 //--------------------------------------------------------------------------\
 //								Program run					   				|
@@ -82,7 +80,7 @@
 	LOCK STEERING TO ((-SHIP:VELOCITY:SURFACE):DIRECTION).
 	
 	LOCK impactDif TO 0.
-	IF(landingCoordinates <> 0 AND (SHIP:BODY:ATM:EXISTS AND SHIP:BODY:ATM:SEALEVELPRESSURE >= 0.3)){	
+	IF(landingCoordinates <> 0 AND (SHIP:BODY:ATM:EXISTS AND SHIP:BODY:ATM:SEALEVELPRESSURE >= 0.03)){	
 		LOCK STEERING TO (-ADDONS:TR:PLANNEDVECTOR):DIRECTION.
 		ADDONS:TR:SETTARGET(landingCoordinates).
 		LOCK STEERING TO (-ADDONS:TR:CORRECTEDVECTOR):DIRECTION.
@@ -162,6 +160,6 @@
 //								Program end					   				|
 //--------------------------------------------------------------------------/
 
-FOR block IN rcsList {
-	block:SETFIELD("thrust limiter", 100).
-}	
+	FOR block IN rcsList {
+		block:SETFIELD("thrust limiter", 100).
+	}	

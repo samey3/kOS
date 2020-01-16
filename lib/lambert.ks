@@ -17,13 +17,14 @@ RUNONCEPATH("lib/processing.ks").
 		PARAMETER s2.
 		PARAMETER allowLob IS TRUE.
 		PARAMETER optArrival IS TRUE.
-		PARAMETER startTime IS TIME:SECONDS.
+		PARAMETER startTime IS TIME:SECONDS + 60.
+		PARAMETER endTime IS 0.
 		
 		LOCAL rv1 IS getECIVecs(s1:ORBIT).
 		LOCAL rv2 IS getECIVecs(s2:ORBIT).
 
 		//RETURN lambert(rv1, rv2, s1:BODY:MU, allowLob, optArrival, startTime).
-		RETURN lambert2(s1:ORBIT, s2:ORBIT, allowLob, optArrival, startTime).
+		RETURN lambert2(s1:ORBIT, s2:ORBIT, allowLob, optArrival, startTime, endTime).
 	}
 	
 	//Provides the lambert result for intercepting a target orbit
@@ -39,7 +40,7 @@ RUNONCEPATH("lib/processing.ks").
 		
 		PARAMETER allowLob IS TRUE.
 		PARAMETER optArrival IS TRUE.
-		PARAMETER startTime IS TIME:SECONDS.
+		PARAMETER startTime IS TIME:SECONDS + 60.
 		
 		
 		//Create the lexicon to hold the desired orbit's parameters

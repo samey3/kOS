@@ -71,7 +71,7 @@
 	
 	//Throttling
 		LOCAL desiredTWR IS 2. //2		
-		LOCK THROTTLE TO getThrottle().
+		LOCK THROTTLE TO 0.
 	
 	//Altitude and flameout events
 		LOCAL lastAltRecorded IS 0.
@@ -90,6 +90,7 @@
 	//----------------------------------------------------\
 	//Wait until launch position--------------------------|
 		SET SHIP:CONTROL:PILOTMAINTHROTTLE TO 0.
+		
 		throwEvent(SHIP:BODY:NAME + "_LAUNCH_START").
 		//If _orbitLex was given, wait until the ascending node to launch (or descending node??)
 		IF(_orbitLex <> 0){
@@ -133,6 +134,7 @@
 		throwEvent(SHIP:BODY:NAME + "_LAUNCH_LIFTOFF").
 		
 		//Stage setup
+		LOCK THROTTLE TO getThrottle().
 		LOCK STEERING TO HEADING(90 - launchLex["inclination"], trajPitch). //90 east, -90(270) west
 	
 		//Until we are within the buffer distance of the initial apoapsis (and safely out of the atmosphere)
@@ -226,3 +228,45 @@
 		IF(SHIP:AVAILABLETHRUST = 0){ RETURN 0. }
 		ELSE { RETURN desiredTWR*(SHIP:MASS*(SHIP:BODY:MU/(SHIP:POSITION - BODY:POSITION):MAG^2)/SHIP:AVAILABLETHRUST). }
 	}
+	
+	
+	
+	
+	
+	//RETURN desiredTWR*(SHIP:MASS*(SHIP:BODY:MU/(SHIP:POSITION - BODY:POSITION):MAG^2)/SHIP:AVAILABLETHRUST).
+	
+	
+	
+	//mu/r^2
+	
+	//want: 2*fg
+	//fg = gm/r^2
+	//f=ma
+	
+	//want 2*a
+	
+	//a_avail = maxthrustAvail
+	
+	
+	//f_thrust/m_ship = a_maximum
+	
+	//desired_accel/a_maximum
+	
+	//desired twr = 2
+	//desired_accel = desired twr*2*GM/r^2
+	//max_accel = avail_thrust/ship_mass
+	//throttle = desired_accel/max_accel
+	
+	
+	
+	//LOCAL desiredTwr IS 2.
+	//LOCAL radiusShip IS (SHIP:POSITION - SHIP:BODY:POSITION):MAG. //r
+	//LOCAL desiredAcc IS desiredAcc*CONSTANT:G()*SHIP:BODY:MASS/radiusShip^2. //a = 2 * GM/r^2
+	//LOCAL desiredAcc IS desiredAcc*SHIP:BODY:MU/radiusShip^2. //a = 2 * mu/r^2 (where mu = GM)
+	//LOCK maxAcc TO SHIP:AVAILABLETHRUST/SHIP:MASS. //a = thrust/m
+	//LOCK THROTTLE TO desiredAcc / maxAcc. //throttle percent = desired / maximum possible
+	
+	
+	
+	
+	

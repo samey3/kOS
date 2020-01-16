@@ -239,3 +239,16 @@
 		
 		throwEvent(SHIP:BODY:NAME + "_FINISHED").
 		WAIT 1.
+		
+		
+//--------------------------------------------------------------------------\
+//								Program end					   				|
+//--------------------------------------------------------------------------/
+
+
+	CLEARVECDRAWS().
+	SAS OFF.
+	RCS OFF.
+	UNLOCK STEERING.
+	UNLOCK THROTTLE.
+	SET SHIP:CONTROL:NEUTRALIZE TO TRUE.

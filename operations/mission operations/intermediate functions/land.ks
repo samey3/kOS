@@ -83,8 +83,11 @@
 		
 		IF(willImpact(SHIP) = FALSE){
 			LOCAL targCoords IS _coordinates.
-			IF(SHIP:BODY:ATM:EXISTS AND SHIP:BODY:ATM:SEALEVELPRESSURE >= 0.3){
+			IF(SHIP:BODY:ATM:EXISTS AND SHIP:BODY:ATM:SEALEVELPRESSURE >= 0.5){
 				SET targCoords TO LATLNG(targCoords:LAT, targCoords:LNG + 13).
+			}
+			ELSE IF(SHIP:BODY:ATM:EXISTS){
+				SET targCoords TO LATLNG(targCoords:LAT, targCoords:LNG - 1.5). //-2
 			}
 			
 			//----------------------------------------------------\

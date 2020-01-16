@@ -7,7 +7,7 @@
         "ROLLTS",
         2,
         "MAXSTOPPINGTIME",
-        5,
+        0.5,
         "ROLLCONTROLANGLERANGE",
         5,
         "PITCHTORQUEADJUST",
@@ -23,7 +23,7 @@
         "ROLLTORQUEFACTOR",
         1,
         "BOOTSCRIPT",
-        "mun_lander.ks"
+        ""
     ],
     "$type": "kOS.Safe.Encapsulation.Lexicon"
 }

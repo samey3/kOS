@@ -41,7 +41,7 @@
 	IF(SHIP:AVAILABLETHRUST = 0 OR delta_v < _node:DELTAV:MAG){	
 		PRINT ("Operation conditions not met ( " + SCRIPTPATH():NAME + " ).").
 		PRINT ("Rebooting. . ."). 
-		WAIT 3. REBOOT.
+		//WAIT 3. REBOOT.
 	}
 	
 	
