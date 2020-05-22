@@ -55,6 +55,12 @@ FUNCTION scalarDifference {
 	RETURN ABS(_A - _B).
 }
 
+FUNCTION roundDec {
+	PARAMETER _value.
+	PARAMETER _numDecimal.
+	RETURN ROUND((_value)*(10^_numDecimal))/(10^_numDecimal).
+}
+
 
 
 //Vectors

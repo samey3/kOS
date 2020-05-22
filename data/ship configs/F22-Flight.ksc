@@ -1,0 +1,29 @@
+{
+    "entries": [
+        "PITCHTS",
+        0.5,
+        "YAWTS",
+        1,
+        "ROLLTS",
+        0.01,
+        "MAXSTOPPINGTIME",
+        0.5,
+        "ROLLCONTROLANGLERANGE",
+        180,
+        "PITCHTORQUEADJUST",
+        0,
+        "YAWTORQUEADJUST",
+        0,
+        "ROLLTORQUEADJUST",
+        0,
+        "PITCHTORQUEFACTOR",
+        0.10,
+        "YAWTORQUEFACTOR",
+        0.10,
+        "ROLLTORQUEFACTOR",
+        0.05,
+        "BOOTSCRIPT",
+        ""
+    ],
+    "$type": "kOS.Safe.Encapsulation.Lexicon"
+}

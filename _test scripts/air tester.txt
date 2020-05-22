@@ -1,0 +1,1 @@
+PID to maintain pitch? e.g. we dont know our lift vector, so perhaps a PID to balance the velocity vector vertically to reach the desired point?

@@ -52,6 +52,8 @@
 	LOCAL basePath IS "operations/mission operations/".
 	
 	//Initialize any basic required parameters if not set
+	IF(_parameterLex:HASKEY("fastbuild") = FALSE){ SET _parameterLex["fastbuild"] TO FALSE. }
+	IF(_parameterLex:HASKEY("resetcontrols") = FALSE){ SET _parameterLex["resetcontrols"] TO TRUE. }
 	IF(_parameterLex:HASKEY("landingcoordinates") = FALSE){ SET _parameterLex["landingcoordinates"] TO 0. }
 
 
@@ -139,7 +141,7 @@
 		PRINT(" ").
 		
 		throwEvent(SHIP:BODY:NAME + "_READY").
-		WAIT 3.
+		IF(_parameterLex["fastbuild"] = FALSE){ WAIT 3. }
 	
 	//#######################################################################
 	//# 						Execute the mission							#
@@ -238,7 +240,7 @@
 			}
 		
 		throwEvent(SHIP:BODY:NAME + "_FINISHED").
-		WAIT 1.
+		IF(_parameterLex["fastbuild"] = FALSE){ WAIT 1. }
 		
 		
 //--------------------------------------------------------------------------\
@@ -247,8 +249,10 @@
 
 
 	CLEARVECDRAWS().
-	SAS OFF.
-	RCS OFF.
-	UNLOCK STEERING.
-	UNLOCK THROTTLE.
-	SET SHIP:CONTROL:NEUTRALIZE TO TRUE.
+	IF(_parameterLex["resetcontrols"] = TRUE){
+		SAS OFF.
+		RCS OFF.
+		UNLOCK STEERING.
+		UNLOCK THROTTLE.
+		SET SHIP:CONTROL:NEUTRALIZE TO TRUE.
+	}

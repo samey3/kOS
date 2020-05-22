@@ -231,6 +231,11 @@
 	
 	
 	
+	//Want
+	//thrust = TWR * GMm/r^2 
+	//thrust = ship:availthrust*throttle%
+	//throttle% = (TWR * GMm/r^2 )/ship:availthrust
+	
 	
 	
 	//RETURN desiredTWR*(SHIP:MASS*(SHIP:BODY:MU/(SHIP:POSITION - BODY:POSITION):MAG^2)/SHIP:AVAILABLETHRUST).

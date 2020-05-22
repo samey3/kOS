@@ -54,6 +54,8 @@
 //								Program run					   				|
 //--------------------------------------------------------------------------/	
 
+	//Find a rotation between ship:facing and our ships port:facing.
+	//Set our ship facing the target ports facing x(-1), and apply that rotation
 	
 	//First move (standoff)
 	SET pointVector TO vesselShipVector*_standOffDistance.
