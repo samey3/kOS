@@ -28,7 +28,8 @@
 			SET airParameterLex["landingheading"] TO 91.1403063534302. 								//North[0], East[90], South[180], West[270]
 			SET airParameterLex["landingspeed"] TO 80. 									//Speed to land at, varies per craft and body
 			SET airParameterLex["descentdistance"] TO 10000. 							//Distance from location for start of descent
-
+//-0.2856, -67.5439
+//-0.1024200459, -67.60161040 est coords
 	//Event listeners
 		addListener("KERBIN_TAKEOFF_ENGINE_STARTUP", { STAGE. }, FALSE).
 		
