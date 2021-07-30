@@ -6,11 +6,16 @@
 //--------------------------------------------------------------------------/
 
 
-	PARAMETER _flyLocation.
-	PARAMETER _flyAltitude.
+	PARAMETER _vesselName.
+	//PARAMETER _flyLocation.
+	//PARAMETER _flyAltitude.
 	PARAMETER _flySpeed.
-	PARAMETER _maxError.
-	PARAMETER _landing IS FALSE.
+
+	LOCAL _landing IS FALSE.
+	LOCK vesselPosition TO VESSEL(_vesselName).
+	
+	//Make it impossible to end
+	LOCAL _maxError IS -1.
 	
 	
 //--------------------------------------------------------------------------\
@@ -50,7 +55,7 @@
 		SET throttlePID:MINOUTPUT TO 0.
 		
 	//The target point to fly to
-	LOCK targetPoint TO _flyLocation:ALTITUDEPOSITION(_flyAltitude).
+	LOCK targetPoint TO vesselPosition.
 	
 	//Pitch, heading, and steering
 	LOCK reqPitch TO steerPID:UPDATE(TIME:SECONDS, VANG((targetPoint - SHIP:POSITION), UP:VECTOR) - VANG(SHIP:VELOCITY:SURFACE, UP:VECTOR)).
@@ -82,7 +87,7 @@
 		//Draw the vectors
 		SET VD TO VECDRAWARGS(SHIP:POSITION, (targetPoint - SHIP:POSITION), RED, "Dir vec", 1, TRUE).
 		SET SV TO VECDRAWARGS(SHIP:POSITION, (reqHeadingVec*ANGLEAXIS(reqPitch, VCRS(reqHeadingVec, UP:VECTOR))):NORMALIZED*20, YELLOW, "Steer vec", 1, TRUE).
-		SET PV TO VECDRAWARGS(_flyLocation:POSITION, (_flyLocation:ALTITUDEPOSITION(_flyAltitude) - _flyLocation:POSITION):NORMALIZED*_flyAltitude, WHITE, "", 1, TRUE, 1).
+		//SET PV TO VECDRAWARGS(_flyLocation:POSITION, (_flyLocation:ALTITUDEPOSITION(_flyAltitude) - _flyLocation:POSITION):NORMALIZED*_flyAltitude, WHITE, "", 1, TRUE, 20).
 		
 		PRINT("Cur pitch: " + (90 - VANG(SHIP:FACING:VECTOR, UP:VECTOR))).
 		PRINT("Dir pitch: " + (90 - VANG((targetPoint - SHIP:POSITION), UP:VECTOR))).
