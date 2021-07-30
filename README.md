@@ -7,3 +7,7 @@ Landing example: https://www.youtube.com/watch?v=jgEB1ZDNOJ8
 Rendezvous+Docking example: https://www.youtube.com/watch?v=Hq_BIyFPB4U
 - Rendezvous: https://youtu.be/HG43NWQKWDw?t=0
 - Docking: https://youtu.be/HG43NWQKWDw?t=375
+
+Plane example:
+- Flight: https://www.youtube.com/watch?v=pH5YdwEaaHo
+- Landing: https://www.youtube.com/watch?v=OC-teHI2iMs
