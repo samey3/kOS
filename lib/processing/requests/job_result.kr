@@ -1,0 +1,21 @@
+{
+"entries": [
+"prograde_2",
+NaN,
+"dt",
+338.59842565563827,
+"prograde_1",
+-923.0403276196918,
+"normal_2",
+NaN,
+"normal_1",
+-0.06813945609964257,
+"t",
+1368.9000000953674,
+"radial_1",
+-2466.376767746059,
+"radial_2",
+NaN
+],
+"$type": "kOS.Safe.Encapsulation.Lexicon"
+}
